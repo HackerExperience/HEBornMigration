@@ -12,7 +12,8 @@ defmodule HEBornMigration.Application do
       supervisor(HEBornMigration.Repo, []),
       # Start the endpoint when the application starts
       supervisor(HEBornMigration.Web.Endpoint, []),
-      # Start your own worker by calling: HEBornMigration.Worker.start_link(arg1, arg2, arg3)
+      # Start your own worker by calling:
+      #  HEBornMigration.Worker.start_link(arg1, arg2, arg3)
       # worker(HEBornMigration.Worker, [arg1, arg2, arg3]),
     ]
 

@@ -14,8 +14,7 @@ defmodule HEBornMigration.Model.HEBorningUser do
     field :token, :string,
       primary_key: true
 
-    field :display_name, :string, size: 15,
-      null: false
+    field :display_name, :string, size: 15
   end
 
   @spec create(String.t, String.t) :: Ecto.Changeset.t

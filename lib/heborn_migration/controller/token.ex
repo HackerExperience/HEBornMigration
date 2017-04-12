@@ -1,15 +1,15 @@
 defmodule HEBornMigration.Controller.Token do
   @moduledoc """
-  Unique Token generator, it's not unique enougth for UUID use cases, but it's
-  unique enough to be used for PIN generation.
+  Unique Token generator, it's not suitable for UUID as it uses a PRNG
+  algorithm, but it's suitable to be used for PIN generation.
 
-  It's proven to cause less than 0.5% conflicts for 600k tokens.
+  It's proven to cause no conflicts for 1kk tokens.
   """
 
-  @token_length 8
+  @token_length 10
 
   @token_characters \
-    '1234567890QWASDERTYHJKL'
+    '1234567890ABCDEFGHIJKLMNPQRSTUVWXYZ'
     |> Enum.map(&([&1]))
     |> Enum.with_index()
 

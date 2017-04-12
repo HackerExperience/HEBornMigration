@@ -6,17 +6,17 @@ defmodule HEBornMigration.Controller.TokenTest do
 
   describe "generate/0" do
     @tag :unit
-    test "generates a token with 8 characters" do
+    test "generates a token with 10 characters" do
       token = Token.generate()
-      assert String.length(token) == 8
+      assert String.length(token) == 10
     end
 
-    @tag heavy: true, timeout: 60_000
-    test "generates 600k tokens with a conflict rate lower than 0.5%" do
-      token_count = 600_000
+    @tag heavy: true, timeout: 120_000
+    test "generates 1.2kk tokens with zero conflicts" do
+      token_count = 1_200_001
 
       tokens =
-        for _ <- 0..token_count,
+        for _ <- 1..token_count,
           do: Token.generate()
 
       unique_token_count =
@@ -24,7 +24,7 @@ defmodule HEBornMigration.Controller.TokenTest do
         |> Enum.uniq()
         |> Enum.count()
 
-      assert 3000 > (token_count - unique_token_count)
+      assert 0 == (token_count - unique_token_count)
     end
   end
 end

@@ -4,6 +4,8 @@ defmodule HEBornMigration.Controller.AccountTest do
 
   alias HEBornMigration.Controller.Account, as: Controller
   alias HEBornMigration.Model.Account
+  alias HEBornMigration.Model.Claim
+  alias HEBornMigration.Model.Confirmation
   alias HEBornMigration.Repo
 
   alias HEBornMigration.Factory
@@ -89,6 +91,33 @@ defmodule HEBornMigration.Controller.AccountTest do
       assert_raise FunctionClauseError, fn ->
         Controller.confirm!(account.confirmation)
       end
+    end
+  end
+
+  describe "get_claim/1" do
+    test "succeeds when claim exists" do
+      claim = Factory.insert(:claim)
+      assert %Claim{} = Controller.get_claim(claim.token)
+    end
+
+    test "fails when claim doesn't exist" do
+      refute Controller.get_claim("00000000")
+    end
+  end
+
+  describe "get_confirmation/1" do
+    test "succeeds when confirmation exists" do
+      account =
+        :account
+        |> Factory.insert()
+        |> Repo.preload(:confirmation)
+
+      result = Controller.get_confirmation(account.confirmation.code)
+      assert %Confirmation{} = result
+    end
+
+    test "fails when confirmation doesn't exist" do
+      refute Controller.get_confirmation("00000000")
     end
   end
 end

@@ -87,6 +87,24 @@ defmodule HEBornMigration.Controller.Account do
     account
   end
 
+  @spec get_claim(Claim.token) ::
+    Claim.t
+    | nil
+  @doc """
+  Gets a `Claim` by its `token`.
+  """
+  def get_claim(token),
+    do: Repo.get(Claim, token)
+
+  @spec get_confirmation(Confirmation.code) ::
+    Confirmation.t
+    | nil
+  @doc """
+  Gets a `Confirmation` by its `code`.
+  """
+  def get_confirmation(code),
+    do: Repo.get(Confirmation, code)
+
   # replaces an expired unconfirmed account
   @spec maybe_expire_account(expire? :: boolean, Account.t, Ecto.Changeset.t) ::
     {:ok, Claim.token}

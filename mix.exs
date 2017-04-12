@@ -71,8 +71,7 @@ defmodule HEBornMigration.Mixfile do
         "ecto.reset",
         "test.unit",
         "test.integration",
-        "test.integration",
-        "test.heavy"
+        "test.integration"
       ],
       "test.quick": ["test --exclude heavy"],
       "test.unit": ["test --only unit"],

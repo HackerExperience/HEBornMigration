@@ -21,6 +21,9 @@ defmodule HEBornMigration.Model.Account do
     updated_at: NaiveDateTime.t
   }
 
+  # unconfirmed account expire date
+  @expiration_time 2 * 24 * 60 * 60
+
   schema "accounts" do
     field :email, :string
     field :username, :string
@@ -38,7 +41,7 @@ defmodule HEBornMigration.Model.Account do
   @spec create(Claim.t, String.t, String.t) ::
     Ecto.Changeset.t
   @doc """
-  Creates Account to be migrated
+  Creates Account to be migrated.
   """
   def create(claim, email, password) do
     params = %{claim: claim, email: email, password: password}
@@ -51,10 +54,20 @@ defmodule HEBornMigration.Model.Account do
   @spec confirm(t) ::
     Ecto.Changeset.t
   @doc """
-  Confirms existing account
+  Confirms existing account.
   """
   def confirm(struct),
     do: changeset(struct, %{confirmed: true})
+
+  @spec expired?(t) ::
+    boolean
+  @doc """
+  Checks if the account is unconfirmed for more than 48 hours.
+  """
+  def expired?(struct) do
+    now = NaiveDateTime.utc_now()
+    NaiveDateTime.diff(now, struct.inserted_at) > @expiration_time
+  end
 
   @doc false
   def changeset(struct, params) do

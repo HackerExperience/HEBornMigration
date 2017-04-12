@@ -8,68 +8,107 @@ defmodule HEBornMigration.Controller.Account do
   @spec claim(display_name :: String.t) ::
     {:ok, token :: String.t}
     | {:error, Ecto.Changeset.t}
-  def claim(display_name) do
-    result =
-      display_name
-      |> Claim.create()
-      |> Repo.insert()
+  @doc """
+  Claims account with given `display_name`, returns a token string to be
+  used for migration.
 
-    case result do
-      {:ok, claim} ->
+  Reclaiming an unconfirmed account is possible after 48 hours, this feature
+  allows players that typed wrong emails to retry their migrations.
+  """
+  def claim(display_name) do
+    changeset = Claim.create(display_name)
+
+    with \
+      nil <- Repo.get_by(Claim, display_name: display_name),
+      nil <- Repo.get_by(Account, username: String.downcase(display_name)),
+      {:ok, claim} <- Repo.insert(changeset)
+    do
+      {:ok, claim.token}
+    else
+      {:error, changeset} ->
+        {:error, changeset}
+
+      claim = %Claim{} ->
         {:ok, claim.token}
-      {:error, reason} ->
-        {:error, reason}
+
+      account = %Account{} ->
+        account
+        |> Account.expired?()
+        |> maybe_expire_account(account, changeset)
     end
   end
 
-  @spec migrate(Claim.token, email :: String.t, password :: String.t) ::
+  @spec migrate(Claim.t, email :: String.t, password :: String.t) ::
     {:ok, Account.t}
     | {:error, Ecto.Changeset.t}
-  def migrate(token, email, password) do
+  @doc """
+  Migrates claimed account, sends an e-mail with the confirmation code.
+  """
+  def migrate(claim, email, password) do
     Repo.transaction fn ->
-      claim = Repo.get(Claim, token)
+      Repo.delete!(claim)
 
       result =
         claim
         |> Account.create(email, password)
         |> Repo.insert()
 
-      with {:ok, account} <- result do
-        Repo.delete(claim)
-        account
-      else
-        {:error, reason} ->
-          Repo.rollback(reason)
+      case result do
+        {:ok, account} ->
+          account
+        {:error, changeset} ->
+          Repo.rollback(changeset)
       end
     end
   end
 
-  @spec confirm(Confirmation.code) ::
-    :ok
-    | :error
-  def confirm(code) do
-    {status, _} =
-      Repo.transaction(fn ->
-        with \
-          confirmation = %Confirmation{} <- Repo.get(Confirmation, code),
+  @spec confirm!(Confirmation.t) ::
+    Account.t
+  @doc """
+  Confirms an already migrated account.
 
-          changeset =
-            confirmation
-            |> Repo.preload(:account)
-            |> Confirmation.confirm(),
+  The expiration date doesn't affect this function, as it's just intented to
+  help users that wrongly typed their emails.
+  """
+  def confirm!(confirmation) do
+    {:ok, account} =
+      Repo.transaction fn ->
+        confirmation =
+          confirmation
+          |> Repo.preload(:account)
+          |> Confirmation.confirm()
+          |> Repo.update!()
 
-          {:ok, confirmation} <- Repo.update(changeset),
-          {:ok, confirmation} <- Repo.delete(confirmation)
-        do
-          confirmation.account
-        else
-          {:error, reason} ->
-            Repo.rollback(reason)
-          nil ->
-            Repo.rollback(:notfound)
-        end
-      end)
+        Repo.delete!(confirmation)
 
-    status
+        confirmation.account
+      end
+
+    account
+  end
+
+  # replaces an expired unconfirmed account
+  @spec maybe_expire_account(expire? :: boolean, Account.t, Ecto.Changeset.t) ::
+    {:ok, Claim.token}
+    | {:error, Ecto.Changeset.t}
+  defp maybe_expire_account(true, account, changeset) do
+    Repo.transaction fn ->
+      Repo.delete!(account)
+
+      case Repo.insert(changeset) do
+        {:ok, claim} ->
+          claim.token
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+      end
+    end
+  end
+  defp maybe_expire_account(false, _, changeset)  do
+    changeset = Ecto.Changeset.add_error(
+      changeset,
+      :display_name,
+      "has been taken")
+
+    {:error, changeset}
   end
 end

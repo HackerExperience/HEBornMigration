@@ -26,19 +26,19 @@ defmodule HEBornMigration.Model.Confirmation do
       define_field: false
   end
 
-  @spec create ::
-    Ecto.Changeset.t
+  @doc false
   def create do
     %__MODULE__{code: Token.generate()}
   end
 
   @spec confirm(t) ::
     Ecto.Changeset.t
+  @doc """
+  Propagates confirmation to account.
+  """
   def confirm(struct) do
     struct
     |> cast(%{}, [])
-    |> foreign_key_constraint(:id)
-    |> unique_constraint(:id)
     |> put_assoc(:account, Account.confirm(struct.account))
   end
 end

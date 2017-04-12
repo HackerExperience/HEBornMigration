@@ -16,16 +16,38 @@ defmodule HEBornMigration.Controller.AccountTest do
 
   describe "claim/1" do
     test "succeeds with valid input" do
-      assert {:ok, _} = Controller.claim("example_user")
+      assert {:ok, token} = Controller.claim("example_user")
+      assert is_binary(token)
     end
 
-    test "fails with invalid input" do
-      assert {:error, %Ecto.Changeset{}} = Controller.claim("&NV@L1|]")
+    test "succeeds when reclaiming expired account" do
+      now = NaiveDateTime.utc_now()
+      two_days_ago = NaiveDateTime.add(now, 60 * 60 * 24 * -3)
+
+      account =
+        :account
+        |> Factory.build()
+        |> Map.put(:inserted_at, two_days_ago)
+        |> Repo.insert!()
+
+      assert {:ok, _} = Controller.claim(account.display_name)
     end
 
-    test "fails when user is already claimed" do
-      {:ok, _} = Controller.claim("example_user")
-      assert {:error, _} = Controller.claim("example_user")
+    test "returns existing token when already claimed" do
+      {:ok, token} = Controller.claim("example_user")
+      assert {:ok, ^token} = Controller.claim("example_user")
+    end
+
+    test "fails with invalid display_name" do
+      assert {:error, %Ecto.Changeset{}} = Controller.claim("&NV@L1|")
+    end
+
+    test "fails when user is already migrated" do
+      claim = Factory.insert(:claim)
+      {:ok, _} = Controller.migrate(claim, "valid@email.com", "validpassword")
+      {:error, cs} = Controller.claim(claim.display_name)
+
+      assert :display_name in Keyword.keys(cs.errors)
     end
   end
 
@@ -36,16 +58,16 @@ defmodule HEBornMigration.Controller.AccountTest do
       email = "valid@email.com"
       password = "validpassword"
 
-      result = Controller.migrate(claim.token, email, password)
+      result = Controller.migrate(claim, email, password)
       assert {:ok, %Account{}} = result
     end
 
     test "fails with invalid input" do
-      token = "000000000"
+      claim = Factory.insert(:claim)
       email = "invalid"
       password = "2small"
 
-      result = Controller.migrate(token, email, password)
+      result = Controller.migrate(claim, email, password)
       assert {:error, %Ecto.Changeset{}} = result
     end
   end
@@ -53,12 +75,20 @@ defmodule HEBornMigration.Controller.AccountTest do
   describe "confirm/1" do
     test "succeeds with valid input" do
       account = Factory.insert(:account)
+      confirmed_account = Controller.confirm!(account.confirmation)
 
-      assert :ok == Controller.confirm(account.confirmation.code)
+      assert confirmed_account.confirmed
     end
 
-    test "fails with invalid input" do
-      assert :error == Controller.confirm("00000000")
+    test "raises FunctionClauseError with invalid input" do
+      account = Factory.insert(:account)
+
+      Repo.delete!(account.confirmation)
+      Repo.delete!(account)
+
+      assert_raise FunctionClauseError, fn ->
+        Controller.confirm!(account.confirmation)
+      end
     end
   end
 end

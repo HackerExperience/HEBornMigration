@@ -21,10 +21,12 @@ defmodule HEBornMigration.Model.Claim do
     field :display_name, :string, size: 15
   end
 
-  @spec create(String.t) :: Ecto.Changeset.t
+  @spec create(String.t) ::
+    Ecto.Changeset.t
   def create(display_name),
     do: changeset(%{display_name: display_name})
 
+  @doc false
   def changeset(struct \\ %__MODULE__{}, params) do
     struct
     |> cast(params, [:display_name])

@@ -4,7 +4,7 @@ defmodule HEBornMigration.Factory do
   alias HEBornMigration.Model.Claim
   alias HEBornMigration.Repo
 
-  @type thing :: :claim | :account
+  @type thing :: :account | :claim
 
   @spec changeset(thing, map | Keyword.t) ::
     Ecto.Changeset.t
@@ -57,8 +57,6 @@ defmodule HEBornMigration.Factory do
 
   @spec params_for(thing) ::
     map
-  def params_for(:claim),
-    do: %{display_name: String.slice(Burette.Internet.username(), 0..14)}
   def params_for(:account) do
     %{
       claim: build(:claim),
@@ -66,14 +64,16 @@ defmodule HEBornMigration.Factory do
       password: Burette.Internet.password()
     }
   end
+  def params_for(:claim),
+    do: %{display_name: String.slice(Burette.Internet.username(), 0..14)}
 
   @spec fabricate_changeset(thing, map) ::
     Ecto.Changeset.t
-  defp fabricate_changeset(:claim, params) do
-    Claim.create(params.display_name)
-  end
   defp fabricate_changeset(:account, params) do
     Account.create(params.claim, params.email, params.password)
+  end
+  defp fabricate_changeset(:claim, params) do
+    Claim.create(params.display_name)
   end
 
   defp to_map(x = %{}),

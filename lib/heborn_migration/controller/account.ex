@@ -2,6 +2,7 @@ defmodule HEBornMigration.Controller.Account do
 
   alias HEBornMigration.Model.Account
   alias HEBornMigration.Model.Claim
+  alias HEBornMigration.Model.Confirmation
   alias HEBornMigration.Repo
 
   @spec claim(display_name :: String.t) ::
@@ -14,9 +15,9 @@ defmodule HEBornMigration.Controller.Account do
       |> Repo.insert()
 
     case result do
-      {:ok, claim = %Claim{}} ->
+      {:ok, claim} ->
         {:ok, claim.token}
-      {:error, reason = %Ecto.Changeset{}} ->
+      {:error, reason} ->
         {:error, reason}
     end
   end
@@ -26,19 +27,49 @@ defmodule HEBornMigration.Controller.Account do
     | {:error, Ecto.Changeset.t}
   def migrate(token, email, password) do
     Repo.transaction fn ->
+      claim = Repo.get(Claim, token)
+
       result =
-        Claim
-        |> Repo.get(token)
+        claim
         |> Account.create(email, password)
         |> Repo.insert()
 
-      case result do
-        {:ok, account = %Account{}} ->
-          # TODO: send email here
-          account
-        {:error, reason = %Ecto.Changeset{}} ->
+      with {:ok, account} <- result do
+        Repo.delete(claim)
+        account
+      else
+        {:error, reason} ->
           Repo.rollback(reason)
       end
     end
+  end
+
+  @spec confirm(Confirmation.code) ::
+    :ok
+    | :error
+  def confirm(code) do
+    {status, _} =
+      Repo.transaction(fn ->
+        with \
+          confirmation = %Confirmation{} <- Repo.get(Confirmation, code),
+
+          changeset =
+            confirmation
+            |> Repo.preload(:account)
+            |> Confirmation.confirm(),
+
+          {:ok, confirmation} <- Repo.update(changeset),
+          {:ok, confirmation} <- Repo.delete(confirmation)
+        do
+          confirmation.account
+        else
+          {:error, reason} ->
+            Repo.rollback(reason)
+          nil ->
+            Repo.rollback(:notfound)
+        end
+      end)
+
+    status
   end
 end

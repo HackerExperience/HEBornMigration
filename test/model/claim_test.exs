@@ -4,7 +4,7 @@ defmodule HEBornMigration.Model.ClaimTest do
 
   alias HEBornMigration.Model.Claim
 
-  describe "create/2" do
+  describe "create/1" do
     test "succeeds with valid input" do
       cs = Claim.create("Example")
 

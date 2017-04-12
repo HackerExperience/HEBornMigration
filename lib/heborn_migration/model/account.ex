@@ -4,6 +4,7 @@ defmodule HEBornMigration.Model.Account do
 
   alias Comeonin.Bcrypt
   alias HEBornMigration.Model.Claim
+  alias HEBornMigration.Model.Confirmation
 
   import Ecto.Changeset
 
@@ -28,6 +29,9 @@ defmodule HEBornMigration.Model.Account do
     field :confirmed, :boolean,
       default: false
 
+    has_one :confirmation, Confirmation,
+      foreign_key: :id
+
     timestamps()
   end
 
@@ -38,7 +42,10 @@ defmodule HEBornMigration.Model.Account do
   """
   def create(claim, email, password) do
     params = %{claim: claim, email: email, password: password}
-    changeset(%__MODULE__{}, params)
+
+    %__MODULE__{}
+    |> changeset(params)
+    |> put_assoc(:confirmation, Confirmation.create())
   end
 
   @spec confirm(t) ::
@@ -50,7 +57,7 @@ defmodule HEBornMigration.Model.Account do
     do: changeset(struct, %{confirmed: true})
 
   @doc false
-  def changeset(struct, params \\ %{}) do
+  def changeset(struct, params) do
     # no display_name validation is being done here as it was already
     # validated on Claim model
     struct

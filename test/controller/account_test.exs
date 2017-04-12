@@ -49,4 +49,16 @@ defmodule HEBornMigration.Controller.AccountTest do
       assert {:error, %Ecto.Changeset{}} = result
     end
   end
+
+  describe "confirm/1" do
+    test "succeeds with valid input" do
+      account = Factory.insert(:account)
+
+      assert :ok == Controller.confirm(account.confirmation.code)
+    end
+
+    test "fails with invalid input" do
+      assert :error == Controller.confirm("00000000")
+    end
+  end
 end

@@ -1,14 +1,14 @@
 defmodule HEBornMigration.Controller.Account do
 
   alias HEBornMigration.Model.Account
-  alias HEBornMigration.Model.HEBorningUser
+  alias HEBornMigration.Model.Claim
   alias HEBornMigration.Repo
 
-  @spec create(HEBorningUser.t, String.t, String.t) ::
+  @spec create(Claim.t, String.t, String.t) ::
     {:ok, Account.t}
     | {:error, Ecto.Changeset.t}
-  def create(heborning_user, email, password) do
-    heborning_user
+  def create(claim, email, password) do
+    claim
     |> Account.create(email, password)
     |> Repo.insert()
   end

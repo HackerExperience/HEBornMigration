@@ -3,7 +3,7 @@ defmodule HEBornMigration.Model.Account do
   use Ecto.Schema
 
   alias Comeonin.Bcrypt
-  alias HEBornMigration.Model.HEBorningUser
+  alias HEBornMigration.Model.Claim
 
   import Ecto.Changeset
 
@@ -31,15 +31,15 @@ defmodule HEBornMigration.Model.Account do
     timestamps()
   end
 
-  @spec create(HEBorningUser.t, String.t, String.t) ::
+  @spec create(Claim.t, String.t, String.t) ::
     Ecto.Changeset.t
   @doc """
   Creates Account to be migrated
   """
-  def create(heborning_user, email, password) do
+  def create(claim, email, password) do
     params = %{
       email: email,
-      display_name: heborning_user.display_name,
+      display_name: claim.display_name,
       password: password
     }
 

@@ -1,30 +1,30 @@
-defmodule HEBornMigration.Controller.HEBorningUser do
+defmodule HEBornMigration.Controller.Claim do
 
   alias HEBornMigration.Controller.Token
-  alias HEBornMigration.Model.HEBorningUser
+  alias HEBornMigration.Model.Claim
   alias HEBornMigration.Repo
 
   @spec request_migration(String.t) ::
-    {:ok, HEBorningUser.t}
+    {:ok, Claim.t}
     | {:error, Ecto.Changeset.t}
   def request_migration(display_name) do
     get_unique_token()
-    |> HEBorningUser.create(display_name)
+    |> Claim.create(display_name)
     |> Repo.insert()
   end
 
   @spec fetch(String.t) ::
-    HEBorningUser.t
+    Claim.t
     | nil
   def fetch(token),
-    do: Repo.get(HEBorningUser, token)
+    do: Repo.get(Claim, token)
 
-  @spec finish_migration(HEBorningUser.t | String.t) :: :ok
-  def finish_migration(heborning_user = %HEBorningUser{}),
-    do: finish_migration(heborning_user.token)
+  @spec finish_migration(Claim.t | String.t) :: :ok
+  def finish_migration(claim = %Claim{}),
+    do: finish_migration(claim.token)
   def finish_migration(token) do
     token
-    |> HEBorningUser.Query.by_token()
+    |> Claim.Query.by_token()
     |> Repo.delete_all()
 
     :ok

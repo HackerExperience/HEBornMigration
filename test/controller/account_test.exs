@@ -16,22 +16,22 @@ defmodule HEBornMigration.Controller.AccountTest do
 
   describe "create/3" do
     test "succeeds with valid input" do
-      heborning = Factory.insert(:heborning_user)
+      claim = Factory.insert(:claim)
 
       email = "valid@email.com"
       password = "validpassword"
 
-      result = AccountController.create(heborning, email, password)
+      result = AccountController.create(claim, email, password)
       assert {:ok, %Account{}} = result
     end
 
     test "fails with invalid input" do
-      heborning = Factory.insert(:heborning_user)
+      claim = Factory.insert(:claim)
 
       email = "invalid"
       password = "2small"
 
-      result = AccountController.create(heborning, email, password)
+      result = AccountController.create(claim, email, password)
       assert {:error, %Ecto.Changeset{}} = result
     end
   end

@@ -1,4 +1,4 @@
-defmodule HEBornMigration.Model.HEBorningUser do
+defmodule HEBornMigration.Model.Claim do
 
   use Ecto.Schema
 
@@ -10,7 +10,7 @@ defmodule HEBornMigration.Model.HEBorningUser do
   }
 
   @primary_key false
-  schema "heborning_users" do
+  schema "claims" do
     field :token, :string,
       primary_key: true
 
@@ -32,12 +32,12 @@ defmodule HEBornMigration.Model.HEBorningUser do
 
   defmodule Query do
 
-    alias HEBornMigration.Model.HEBorningUser
+    alias HEBornMigration.Model.Claim
 
     import Ecto.Query, only: [where: 3]
 
     @spec by_token(Ecto.Queryable.t, String.t) :: Ecto.Queryable.t
-    def by_token(query \\ HEBorningUser, token),
+    def by_token(query \\ Claim, token),
       do: where(query, [ma], ma.token == ^token)
   end
 end

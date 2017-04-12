@@ -1,11 +1,11 @@
-defmodule HEBornMigration.Controller.HEBorningUserTest do
+defmodule HEBornMigration.Controller.ClaimTest do
 
   use ExUnit.Case, async: true
 
-  alias HEBornMigration.Controller.HEBorningUser,
-    as: HEBorningUserController
+  alias HEBornMigration.Controller.Claim,
+    as: ClaimController
   alias HEBornMigration.Controller.Token
-  alias HEBornMigration.Model.HEBorningUser
+  alias HEBornMigration.Model.Claim
   alias HEBornMigration.Repo
 
   alias HEBornMigration.Factory
@@ -16,55 +16,55 @@ defmodule HEBornMigration.Controller.HEBorningUserTest do
 
   describe "request_migration/1" do
     test "succeeds with valid input" do
-      result = HEBorningUserController.request_migration("account_name")
-      assert {:ok, %HEBorningUser{}} = result
+      result = ClaimController.request_migration("account_name")
+      assert {:ok, %Claim{}} = result
     end
 
     test "fails with invalid input" do
       too_long_name = "abcdefghijklmnopq"
 
-      result = HEBorningUserController.request_migration(too_long_name)
+      result = ClaimController.request_migration(too_long_name)
       assert {:error, %Ecto.Changeset{}} = result
     end
   end
 
   describe "fetch/1" do
-    test "succeeds when heborning account exists" do
-      heborning = Factory.insert(:heborning_user)
-      result = HEBorningUserController.fetch(heborning.token)
+    test "succeeds when claim account exists" do
+      claim = Factory.insert(:claim)
+      result = ClaimController.fetch(claim.token)
 
-      assert %HEBorningUser{} = result
+      assert %Claim{} = result
     end
 
-    test "fails when heborning account doesn't exist" do
-      refute HEBorningUserController.fetch(Token.generate())
+    test "fails when claim account doesn't exist" do
+      refute ClaimController.fetch(Token.generate())
     end
   end
 
   describe "finish_migration/1" do
     test "is idempotent" do
-      heborning = Factory.insert(:heborning_user)
+      claim = Factory.insert(:claim)
 
-      HEBorningUserController.finish_migration(heborning)
-      HEBorningUserController.finish_migration(heborning)
+      ClaimController.finish_migration(claim)
+      ClaimController.finish_migration(claim)
 
-      refute HEBorningUserController.fetch(heborning.token)
+      refute ClaimController.fetch(claim.token)
     end
 
     test "succeeds by id" do
-      heborning = Factory.insert(:heborning_user)
+      claim = Factory.insert(:claim)
 
-      HEBorningUserController.finish_migration(heborning.token)
+      ClaimController.finish_migration(claim.token)
 
-      refute HEBorningUserController.fetch(heborning.token)
+      refute ClaimController.fetch(claim.token)
     end
 
     test "succeeds by struct" do
-      heborning = Factory.insert(:heborning_user)
+      claim = Factory.insert(:claim)
 
-      HEBorningUserController.finish_migration(heborning)
+      ClaimController.finish_migration(claim)
 
-      refute HEBorningUserController.fetch(heborning.token)
+      refute ClaimController.fetch(claim.token)
     end
   end
 end

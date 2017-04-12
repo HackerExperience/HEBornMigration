@@ -1,6 +1,5 @@
 defmodule HEBornMigration.Factory do
 
-  alias HEBornMigration.Controller.Token
   alias HEBornMigration.Model.Account
   alias HEBornMigration.Model.Claim
   alias HEBornMigration.Repo
@@ -58,15 +57,11 @@ defmodule HEBornMigration.Factory do
 
   @spec params_for(thing) ::
     map
-  def params_for(:claim) do
-    %{
-      token: Token.generate(),
-      display_name: String.slice(Burette.Internet.username(), 0..14)
-    }
-  end
+  def params_for(:claim),
+    do: %{display_name: String.slice(Burette.Internet.username(), 0..14)}
   def params_for(:account) do
     %{
-      claim: params_for(:claim),
+      claim: build(:claim),
       email: Burette.Internet.email(),
       password: Burette.Internet.password()
     }
@@ -75,7 +70,7 @@ defmodule HEBornMigration.Factory do
   @spec fabricate_changeset(thing, map) ::
     Ecto.Changeset.t
   defp fabricate_changeset(:claim, params) do
-    Claim.create(params.token, params.display_name)
+    Claim.create(params.display_name)
   end
   defp fabricate_changeset(:account, params) do
     Account.create(params.claim, params.email, params.password)

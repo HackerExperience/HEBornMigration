@@ -1,12 +1,12 @@
-defmodule HEBornMigration.Controller.AccountTest do
+defmodule HEBornMigration.Web.AccountControllerTest do
 
   use ExUnit.Case, async: true
 
-  alias HEBornMigration.Controller.Account, as: Controller
-  alias HEBornMigration.Model.Account
-  alias HEBornMigration.Model.Claim
-  alias HEBornMigration.Model.Confirmation
   alias HEBornMigration.Repo
+  alias HEBornMigration.Web.AccountController, as: Controller
+  alias HEBornMigration.Web.Account
+  alias HEBornMigration.Web.Claim
+  alias HEBornMigration.Web.Confirmation
 
   alias HEBornMigration.Factory
 

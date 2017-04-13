@@ -1,4 +1,4 @@
-defmodule HEBornMigration.Controller.Token do
+defmodule HEBornMigration.Web.TokenController do
   @moduledoc """
   Unique Token generator, it's not suitable for UUID as it uses a PRNG
   algorithm, but it's suitable to be used for PIN generation.

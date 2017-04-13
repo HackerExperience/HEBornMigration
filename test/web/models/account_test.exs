@@ -1,8 +1,8 @@
-defmodule HEBornMigration.Model.AccountTest do
+defmodule HEBornMigration.Web.AccountTest do
 
   use ExUnit.Case, async: true
 
-  alias HEBornMigration.Model.Account
+  alias HEBornMigration.Web.Account
 
   alias HEBornMigration.Factory
 

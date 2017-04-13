@@ -1,15 +1,17 @@
 defmodule HEBornMigration.Web.PageController do
   use HEBornMigration.Web, :controller
 
-  alias HEBornMigration.Controller.Account, as: AccountController
-  alias HEBornMigration.Model.Claim
+  alias HEBornMigration.Web.AccountController, as: Controller
+  alias HEBornMigration.Web.Account
+  alias HEBornMigration.Web.Claim
 
   def index(conn, _params) do
-    render conn, "index.html"
+    changeset = Account.changeset(%Account{}, %{})
+    render conn, "index.html", changeset: changeset
   end
 
   def claim(conn, %{"username" => display_name}) do
-    case AccountController.claim(display_name) do
+    case Controller.claim(display_name) do
       {:ok, token} ->
         json conn, %{token: token}
       {:error, changeset} ->

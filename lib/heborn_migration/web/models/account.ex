@@ -1,10 +1,10 @@
-defmodule HEBornMigration.Model.Account do
+defmodule HEBornMigration.Web.Account do
 
   use Ecto.Schema
 
   alias Comeonin.Bcrypt
-  alias HEBornMigration.Model.Claim
-  alias HEBornMigration.Model.Confirmation
+  alias HEBornMigration.Web.Claim
+  alias HEBornMigration.Web.Confirmation
 
   import Ecto.Changeset
 

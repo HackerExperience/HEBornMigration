@@ -1,8 +1,8 @@
 defmodule HEBornMigration.Factory do
 
-  alias HEBornMigration.Model.Account
-  alias HEBornMigration.Model.Claim
   alias HEBornMigration.Repo
+  alias HEBornMigration.Web.Account
+  alias HEBornMigration.Web.Claim
 
   @type thing :: :account | :claim
 

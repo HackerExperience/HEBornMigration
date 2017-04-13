@@ -1,9 +1,9 @@
-defmodule HEBornMigration.Controller.Account do
+defmodule HEBornMigration.Web.AccountController do
 
-  alias HEBornMigration.Model.Account
-  alias HEBornMigration.Model.Claim
-  alias HEBornMigration.Model.Confirmation
   alias HEBornMigration.Repo
+  alias HEBornMigration.Web.Account
+  alias HEBornMigration.Web.Claim
+  alias HEBornMigration.Web.Confirmation
 
   @spec claim(display_name :: String.t) ::
     {:ok, token :: String.t}

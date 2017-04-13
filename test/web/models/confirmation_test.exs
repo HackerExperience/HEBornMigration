@@ -1,8 +1,8 @@
-defmodule HEBornMigration.Model.ConfirmationTest do
+defmodule HEBornMigration.Web.ConfirmationTest do
 
   use ExUnit.Case, async: true
 
-  alias HEBornMigration.Model.Confirmation
+  alias HEBornMigration.Web.Confirmation
 
   alias HEBornMigration.Factory
 

@@ -18,11 +18,10 @@ defmodule HEBornMigration.Web.Router do
 
     get "/", PageController, :index
 
-    get "/claim/:display_name", PageController, :claim
-  end
+    post "/claim", PageController, :claim
 
-  # Other scopes may use custom stacks.
-  # scope "/api", HEBornMigration.Web do
-  #   pipe_through :api
-  # end
+    post "/migrate", PageController, :migrate
+
+    post "/confirm", PageController, :confirm
+  end
 end

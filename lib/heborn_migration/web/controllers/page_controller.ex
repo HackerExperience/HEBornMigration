@@ -8,9 +8,7 @@ defmodule HEBornMigration.Web.PageController do
     render conn, "index.html"
   end
 
-  def claim(conn, params) do
-    display_name = Map.fetch!(params, "display_name")
-
+  def claim(conn, %{"username" => display_name}) do
     case AccountController.claim(display_name) do
       {:ok, token} ->
         json conn, %{token: token}

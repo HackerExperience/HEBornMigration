@@ -69,6 +69,19 @@ defmodule HEBornMigration.Model.Account do
     NaiveDateTime.diff(now, struct.inserted_at) > @expiration_time
   end
 
+  @spec format_error(Ecto.Changeset.t) ::
+    %{atom => [String.t]}
+  @doc """
+  Formats changeset errors
+  """
+  def format_error(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
+      Enum.reduce(opts, msg, fn {key, value}, acc ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+      end)
+    end)
+  end
+
   @doc false
   def changeset(struct, params) do
     # no display_name validation is being done here as it was already

@@ -8,15 +8,23 @@ defmodule HEBornMigration.Model.AccountTest do
 
   @moduletag :unit
 
-  describe "create/2" do
+  describe "create/4" do
     test "succeeds with valid fields" do
       claim = Factory.build(:claim)
 
       email = "valid@email.com"
       password = "validpassword"
 
-      cs = Account.create(claim, email, password)
+      cs = Account.create(claim, email, password, password)
       assert cs.valid?
+    end
+
+    test "adds token error when called with nil claim" do
+      email = "valid@email.com"
+      password = "validpassword"
+
+      cs =  Account.create(nil, email, password, password)
+      assert :token in Keyword.keys(cs.errors)
     end
 
     test "validate fields" do
@@ -26,10 +34,12 @@ defmodule HEBornMigration.Model.AccountTest do
       short_password = "v"
       invalid_email = "invalid.email"
 
-      cs = Account.create(claim, invalid_email, short_password)
+      cs = Account.create(claim, invalid_email, short_password, short_password)
       assert :password in Keyword.keys(cs.errors)
       assert :email in Keyword.keys(cs.errors)
       refute cs.valid?
+
+      # FIXME: add password_confirmation validation test
     end
   end
 

@@ -46,7 +46,10 @@ defmodule HEBornMigration.Controller.AccountTest do
 
     test "fails when user is already migrated" do
       claim = Factory.insert(:claim)
-      {:ok, _} = Controller.migrate(claim, "valid@email.com", "validpassword")
+      email = "valid@email.com"
+      password = "validpassword"
+
+      {:ok, _} = Controller.migrate(claim, email, password, password)
       {:error, cs} = Controller.claim(claim.display_name)
 
       assert :display_name in Keyword.keys(cs.errors)
@@ -60,7 +63,7 @@ defmodule HEBornMigration.Controller.AccountTest do
       email = "valid@email.com"
       password = "validpassword"
 
-      result = Controller.migrate(claim, email, password)
+      result = Controller.migrate(claim, email, password, password)
       assert {:ok, %Account{}} = result
     end
 
@@ -69,7 +72,7 @@ defmodule HEBornMigration.Controller.AccountTest do
       email = "invalid"
       password = "2small"
 
-      result = Controller.migrate(claim, email, password)
+      result = Controller.migrate(claim, email, password, password)
       assert {:error, %Ecto.Changeset{}} = result
     end
   end

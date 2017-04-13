@@ -70,7 +70,7 @@ defmodule HEBornMigration.Factory do
   @spec fabricate_changeset(thing, map) ::
     Ecto.Changeset.t
   defp fabricate_changeset(:account, params) do
-    Account.create(params.claim, params.email, params.password)
+    Account.create(params.claim, params.email, params.password, params.password)
   end
   defp fabricate_changeset(:claim, params) do
     Claim.create(params.display_name)

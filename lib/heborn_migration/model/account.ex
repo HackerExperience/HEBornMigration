@@ -29,6 +29,8 @@ defmodule HEBornMigration.Model.Account do
     field :username, :string
     field :display_name, :string
     field :password, :string
+    field :password_confirmation, :string,
+      virtual: true
     field :confirmed, :boolean,
       default: false
 
@@ -38,17 +40,27 @@ defmodule HEBornMigration.Model.Account do
     timestamps()
   end
 
-  @spec create(Claim.t, String.t, String.t) ::
+  @spec create(Claim.t, String.t, String.t, String.t) ::
     Ecto.Changeset.t
   @doc """
   Creates Account to be migrated.
   """
-  def create(claim, email, password) do
-    params = %{claim: claim, email: email, password: password}
+  def create(claim = %Claim{}, email, password, password_confirmation) do
+    params = %{
+      claim: claim,
+      email: email,
+      password: password,
+      password_confirmation: password_confirmation
+    }
 
     %__MODULE__{}
     |> changeset(params)
     |> put_assoc(:confirmation, Confirmation.create())
+  end
+  def create(nil, email, password, password_confirmation) do
+    %Claim{token: "", display_name: ""}
+    |> create(email, password, password_confirmation)
+    |> add_error(:token, "is invalid")
   end
 
   @spec confirm(t) ::
@@ -94,6 +106,7 @@ defmodule HEBornMigration.Model.Account do
     |> validate_change(:email, &validate_email/2)
     |> update_change(:email, &String.downcase/1)
     |> unique_constraint(:email)
+    |> validate_confirmation(:password)
     |> validate_length(:password, min: 8)
     |> update_change(:password, &Bcrypt.hashpwsalt/1)
     |> validate_required([:display_name, :username, :email, :password])

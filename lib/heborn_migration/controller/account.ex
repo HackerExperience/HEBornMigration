@@ -38,19 +38,19 @@ defmodule HEBornMigration.Controller.Account do
     end
   end
 
-  @spec migrate(Claim.t, email :: String.t, password :: String.t) ::
+  @spec migrate(Claim.t, String.t, String.t, String.t) ::
     {:ok, Account.t}
     | {:error, Ecto.Changeset.t}
   @doc """
   Migrates claimed account, sends an e-mail with the confirmation code.
   """
-  def migrate(claim, email, password) do
+  def migrate(claim, email, password, password_confirmation) do
     Repo.transaction fn ->
       Repo.delete!(claim)
 
       result =
         claim
-        |> Account.create(email, password)
+        |> Account.create(email, password, password_confirmation)
         |> Repo.insert()
 
       case result do

@@ -26,6 +26,19 @@ defmodule HEBornMigration.Model.Claim do
   def create(display_name),
     do: changeset(%{display_name: display_name})
 
+  @spec format_error(Ecto.Changeset.t) ::
+    %{atom => [String.t]}
+  @doc """
+  Formats changeset errors
+  """
+  def format_error(changeset) do
+    traverse_errors(changeset, fn {msg, opts} ->
+      Enum.reduce(opts, msg, fn {key, value}, acc ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+      end)
+    end)
+  end
+
   @doc false
   def changeset(struct \\ %__MODULE__{}, params) do
     struct

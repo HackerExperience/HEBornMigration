@@ -1,8 +1,8 @@
-defmodule HEBornMigration.Model.Claim do
+defmodule HEBornMigration.Web.Claim do
 
   use Ecto.Schema
 
-  alias HEBornMigration.Controller.Token
+  alias HEBornMigration.Web.TokenController
 
   import Ecto.Changeset
 
@@ -46,7 +46,7 @@ defmodule HEBornMigration.Model.Claim do
     |> validate_required([:display_name])
     |> validate_change(:display_name, &validate_display_name/2)
     |> unique_constraint(:display_name)
-    |> put_change(:token, Token.generate())
+    |> put_change(:token, TokenController.generate())
   end
 
   @spec validate_display_name(:display_name, String.t) ::
@@ -59,5 +59,18 @@ defmodule HEBornMigration.Model.Claim do
     && Regex.match?(~r/^[a-zA-Z0-9][a-zA-Z0-9\!\?\$\%\-\_\.]{1,15}$/, value)
     && []
     || [display_name: "has invalid format"]
+  end
+
+  defmodule Query do
+
+    alias HEBornMigration.Web.Claim
+
+    import Ecto.Query, only: [where: 3]
+
+    def by_token(query \\ Claim, token) do
+      token = String.downcase(token)
+
+      where(query, [c], c.token == ^token)
+    end
   end
 end

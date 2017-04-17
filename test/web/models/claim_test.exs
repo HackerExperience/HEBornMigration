@@ -1,8 +1,8 @@
-defmodule HEBornMigration.Model.ClaimTest do
+defmodule HEBornMigration.Web.ClaimTest do
 
   use ExUnit.Case, async: true
 
-  alias HEBornMigration.Model.Claim
+  alias HEBornMigration.Web.Claim
 
   describe "create/1" do
     test "succeeds with valid input" do

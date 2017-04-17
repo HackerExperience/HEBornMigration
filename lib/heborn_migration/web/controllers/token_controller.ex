@@ -1,4 +1,4 @@
-defmodule HEBornMigration.Controller.Token do
+defmodule HEBornMigration.Web.TokenController do
   @moduledoc """
   Unique Token generator, it's not suitable for UUID as it uses a PRNG
   algorithm, but it's suitable to be used for PIN generation.
@@ -9,7 +9,7 @@ defmodule HEBornMigration.Controller.Token do
   @token_length 10
 
   @token_characters \
-    '1234567890ABCDEFGHIJKLMNPQRSTUVWXYZ'
+    '1234567890abcdefghijklmnopqrstuvwxyz'
     |> Enum.map(&([&1]))
     |> Enum.with_index()
 

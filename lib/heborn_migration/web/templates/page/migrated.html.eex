@@ -1,0 +1,11 @@
+<div>
+  <h2><%= gettext "You're almost ready!" %></h2>
+  <p>
+    <%= gettext "We've sent a confirmation email to" %> <%= @email %>
+  </p>
+  <hr/>
+  <small>
+    <span><%= gettext "No message yet? Used the wrong email?" %></span>
+    <span <%= gettext "Try migrating again after 48 hours" %></span>
+  </small>
+</div>

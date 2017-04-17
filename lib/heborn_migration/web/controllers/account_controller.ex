@@ -1,9 +1,9 @@
-defmodule HEBornMigration.Controller.Account do
+defmodule HEBornMigration.Web.AccountController do
 
-  alias HEBornMigration.Model.Account
-  alias HEBornMigration.Model.Claim
-  alias HEBornMigration.Model.Confirmation
   alias HEBornMigration.Repo
+  alias HEBornMigration.Web.Account
+  alias HEBornMigration.Web.Claim
+  alias HEBornMigration.Web.Confirmation
 
   @spec claim(display_name :: String.t) ::
     {:ok, token :: String.t}
@@ -38,23 +38,29 @@ defmodule HEBornMigration.Controller.Account do
     end
   end
 
-  @spec migrate(Claim.t, email :: String.t, password :: String.t) ::
+  @spec migrate(Claim.t | String.t, String.t, String.t, String.t) ::
     {:ok, Account.t}
     | {:error, Ecto.Changeset.t}
   @doc """
   Migrates claimed account, sends an e-mail with the confirmation code.
   """
-  def migrate(claim, email, password) do
+  def migrate(token, email, password, password_confirmation)
+  when is_binary(token) do
+    token
+    |> Claim.Query.by_token()
+    |> Repo.one()
+    |> migrate(email, password, password_confirmation)
+  end
+  def migrate(claim, email, password, password_confirmation) do
     Repo.transaction fn ->
-      Repo.delete!(claim)
-
       result =
         claim
-        |> Account.create(email, password)
+        |> Account.create(email, password, password_confirmation)
         |> Repo.insert()
 
       case result do
         {:ok, account} ->
+          Repo.delete!(claim)
           account
         {:error, changeset} ->
           Repo.rollback(changeset)
@@ -62,48 +68,45 @@ defmodule HEBornMigration.Controller.Account do
     end
   end
 
-  @spec confirm!(Confirmation.t) ::
-    Account.t
+  @spec confirm(Confirmation.t | String.t) ::
+    {:ok, Account.t}
+    | {:error, Ecto.Changeset.t}
   @doc """
   Confirms an already migrated account.
 
   The expiration date doesn't affect this function, as it's just intented to
   help users that wrongly typed their emails.
   """
-  def confirm!(confirmation) do
-    {:ok, account} =
-      Repo.transaction fn ->
-        confirmation =
-          confirmation
-          |> Repo.preload(:account)
-          |> Confirmation.confirm()
-          |> Repo.update!()
+  def confirm(confirmation = %Confirmation{}) do
+    Repo.transaction(fn ->
+      changeset =
+        confirmation
+        |> Repo.preload(:account)
+        |> Confirmation.confirm()
 
-        Repo.delete!(confirmation)
-
-        confirmation.account
+      case Repo.update(changeset) do
+        {:ok, confirmation} ->
+          Repo.delete!(confirmation)
+          confirmation.account
+        {:error, changeset} ->
+          Repo.rollback(changeset)
       end
-
-    account
+    end)
   end
+  def confirm(code) do
+    result =
+      code
+      |> Confirmation.Query.by_code()
+      |> Repo.one()
 
-  @spec get_claim(Claim.token) ::
-    Claim.t
-    | nil
-  @doc """
-  Gets a `Claim` by its `token`.
-  """
-  def get_claim(token),
-    do: Repo.get(Claim, token)
-
-  @spec get_confirmation(Confirmation.code) ::
-    Confirmation.t
-    | nil
-  @doc """
-  Gets a `Confirmation` by its `code`.
-  """
-  def get_confirmation(code),
-    do: Repo.get(Confirmation, code)
+    case result do
+      nil ->
+        changeset = Confirmation.code_error(code)
+        {:error, changeset}
+      confirmation ->
+        confirm(confirmation)
+    end
+  end
 
   # replaces an expired unconfirmed account
   @spec maybe_expire_account(expire? :: boolean, Account.t, Ecto.Changeset.t) ::

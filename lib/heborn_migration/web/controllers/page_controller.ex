@@ -1,42 +1,49 @@
 defmodule HEBornMigration.Web.PageController do
   use HEBornMigration.Web, :controller
 
-  alias HEBornMigration.Web.AccountController, as: Controller
   alias HEBornMigration.Web.Account
   alias HEBornMigration.Web.Claim
   alias HEBornMigration.Web.Confirmation
-  alias HEBornMigration.Web.EmailController, as: Email
+  alias HEBornMigration.Web.Service
 
+  @doc """
+  The standard index route, features a migration form.
+  """
   def get_migrate(conn, _params) do
     changeset = Account.changeset(%Account{}, %{})
     render conn, "index.html", changeset: changeset
   end
 
+  @doc """
+  Post route for migrating an account.
+  """
   def post_migrate(conn, %{"account" => account}) do
+    token = account["token"]
     email = account["email"]
-    passw0 = account["password"]
-    passw1 = account["password_confirmation"]
+    pass0 = account["password"]
+    pass1 = account["password_confirmation"]
 
-    case Controller.migrate(account["token"], email, passw0, passw1) do
+    case Service.migrate(token, email, pass0, pass1) do
       {:ok, account} ->
-        email = account.email
-        code = account.confirmation.code
-
-        Email.send_confirmation(conn, email, code)
-
-        render conn, "migrated.html", email: email
+        render conn, "migrated.html", email: account.email
       {:error, changeset} ->
         render conn, "index.html", changeset: changeset
     end
   end
 
+  @doc """
+  The confirmation page, features a form for confirmation code input.
+  """
   def get_confirm(conn, _params) do
     changeset = Ecto.Changeset.cast(%Confirmation{}, %{}, [])
     render conn, "confirm.html", changeset: changeset
   end
 
+  @doc """
+  Post route for confirming an account.
+  """
   def post_confirm(conn, %{"confirmation" => confirmation}) do
-    case Controller.confirm(confirmation["code"]) do
+    case Service.confirm(confirmation["code"]) do
       {:ok, account} ->
         render conn, "confirmed.html", account: account
       {:error, changeset} ->
@@ -44,8 +51,11 @@ defmodule HEBornMigration.Web.PageController do
     end
   end
 
+  @doc """
+  Claims account by link, used from PHP HE1.
+  """
   def claim_by_link(conn, %{"username" => display_name}) do
-    case Controller.claim(display_name) do
+    case Service.claim(display_name) do
       {:ok, token} ->
         json conn, %{token: token}
       {:error, changeset} ->
@@ -57,8 +67,12 @@ defmodule HEBornMigration.Web.PageController do
     end
   end
 
+  @doc """
+  Confirms account by link, the link that leads here maybe clicked from some
+  email.
+  """
   def confirm_by_link(conn, %{"code" => code}) do
-    case Controller.confirm(code) do
+    case Service.confirm(code) do
       {:ok, account} ->
         render conn, "confirmed.html", account: account
       {:error, changeset} ->

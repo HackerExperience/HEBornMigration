@@ -3,12 +3,15 @@ defmodule HEBornMigration.Web.Account do
   use Ecto.Schema
 
   alias Comeonin.Bcrypt
-  alias HEBornMigration.Web.Claim
   alias HEBornMigration.Web.Confirmation
 
   import Ecto.Changeset
 
   @type id :: pos_integer
+  @type email :: String.t
+  @type username :: String.t
+  @type display_name :: String.t
+  @type password :: String.t
 
   @type t :: %__MODULE__{
     id: pos_integer,
@@ -40,14 +43,14 @@ defmodule HEBornMigration.Web.Account do
     timestamps()
   end
 
-  @spec create(Claim.t, String.t, String.t, String.t) ::
+  @spec create(display_name, email, password, confirmation :: password) ::
     Ecto.Changeset.t
   @doc """
   Creates Account to be migrated.
   """
-  def create(claim = %Claim{}, email, password, password_confirmation) do
+  def create(display_name, email, password, password_confirmation) do
     params = %{
-      claim: claim,
+      display_name: display_name,
       email: email,
       password: password,
       password_confirmation: password_confirmation
@@ -55,23 +58,32 @@ defmodule HEBornMigration.Web.Account do
 
     %__MODULE__{}
     |> changeset(params)
-    |> validate_confirmation(:password, required: true,
-      message: "does not match password")
+    |> validate_password()
     |> put_assoc(:confirmation, Confirmation.create())
   end
-  def create(nil, email, password, password_confirmation) do
-    %Claim{token: "", display_name: ""}
-    |> create(email, password, password_confirmation)
-    |> add_error(:token, "is invalid")
-  end
 
-  @spec confirm(t) ::
+  @spec invalid_token_changeset(email, password, confirmation :: password) ::
     Ecto.Changeset.t
   @doc """
-  Confirms existing account.
+  Returns a changeset with an invalid_token error, used when trying to migrate
+  with an invalid/expired token.
   """
-  def confirm(struct),
-    do: changeset(struct, %{confirmed: true})
+  def invalid_token_changeset(email, password, password_confirmation) do
+    params = %{
+      email: email,
+      password: password,
+      password_confirmation: password_confirmation
+    }
+
+    changeset =
+      %__MODULE__{}
+      |> changeset(params)
+      |> validate_password()
+      |> add_error(:token, "is invalid")
+
+    # phoenix only displays errors from changeset with actions
+    %{changeset | action: :insert}
+  end
 
   @spec expired?(t) ::
     boolean
@@ -83,18 +95,13 @@ defmodule HEBornMigration.Web.Account do
     NaiveDateTime.diff(now, struct.inserted_at) > @expiration_time
   end
 
-  @spec format_error(Ecto.Changeset.t) ::
-    %{atom => [String.t]}
+  @spec confirm(t) ::
+    Ecto.Changeset.t
   @doc """
-  Formats changeset errors
+  Confirms existing account.
   """
-  def format_error(changeset) do
-    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
-      Enum.reduce(opts, msg, fn {key, value}, acc ->
-        String.replace(acc, "%{#{key}}", to_string(value))
-      end)
-    end)
-  end
+  def confirm(struct),
+    do: changeset(struct, %{confirmed: true})
 
   @doc false
   def changeset(struct, params) do
@@ -102,7 +109,6 @@ defmodule HEBornMigration.Web.Account do
     # validated on Claim model
     struct
     |> cast(params, [:display_name, :email, :password, :confirmed])
-    |> put_display_name_from_claim(params)
     |> propagate_change(:display_name, :username, &String.downcase/1)
     |> unique_constraint(:username)
     |> validate_change(:email, &validate_email/2)
@@ -111,19 +117,6 @@ defmodule HEBornMigration.Web.Account do
     |> validate_length(:password, min: 8)
     |> update_change(:password, &Bcrypt.hashpwsalt/1)
     |> validate_required([:display_name, :username, :email, :password])
-  end
-
-  # puts diplay_name from claim
-  defp put_display_name_from_claim(changeset, %{claim: claim}) do
-    case claim do
-      %Claim{} ->
-        put_change(changeset, :display_name, claim.display_name)
-      _ ->
-        changeset
-    end
-  end
-  defp put_display_name_from_claim(changeset, _) do
-    changeset
   end
 
   # propagates a change to another field, optionall accepts a mapping function
@@ -147,5 +140,30 @@ defmodule HEBornMigration.Web.Account do
     && Regex.match?(~r/^[\w0-9\.\-\_\+]+@[\w0-9\.\-\_]+\.[\w0-9\-]+$/ui, value)
     && []
     || [email: "has invalid format"]
+  end
+
+  @spec validate_password(Ecto.Changeset.t) :: Ecto.Changeset.t
+  defp validate_password(changeset) do
+    validate_confirmation(
+      changeset,
+      :password,
+      required: true,
+      message: "does not match password")
+  end
+
+  defmodule Query do
+
+    alias HEBornMigration.Web.Account
+
+    import Ecto.Query, only: [where: 3]
+
+    @spec by_username(
+      Ecto.Queryable.t,
+      Account.username | Account.display_name) :: Ecto.Queryable.t
+    def by_username(query \\ Account, username) do
+      username = String.downcase(username)
+
+      where(query, [a], a.username == ^username)
+    end
   end
 end

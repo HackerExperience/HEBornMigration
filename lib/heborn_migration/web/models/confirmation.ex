@@ -3,7 +3,7 @@ defmodule HEBornMigration.Web.Confirmation do
   use Ecto.Schema
 
   alias HEBornMigration.Web.Account
-  alias HEBornMigration.Web.TokenController
+  alias HEBornMigration.Web.Token
 
   import Ecto.Changeset
 
@@ -28,7 +28,7 @@ defmodule HEBornMigration.Web.Confirmation do
 
   @doc false
   def create do
-    %__MODULE__{code: TokenController.generate()}
+    %__MODULE__{code: Token.generate()}
   end
 
   @spec confirm(t) ::

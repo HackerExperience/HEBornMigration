@@ -9,7 +9,7 @@ defmodule HEBornMigration.Web.TokenController do
   @token_length 10
 
   @token_characters \
-    '1234567890ABCDEFGHIJKLMNPQRSTUVWXYZ'
+    '1234567890abcdefghijklmnopqrstuvwxyz'
     |> Enum.map(&([&1]))
     |> Enum.with_index()
 

@@ -60,4 +60,17 @@ defmodule HEBornMigration.Web.Claim do
     && []
     || [display_name: "has invalid format"]
   end
+
+  defmodule Query do
+
+    alias HEBornMigration.Web.Claim
+
+    import Ecto.Query, only: [where: 3]
+
+    def by_token(query \\ Claim, token) do
+      token = String.downcase(token)
+
+      where(query, [c], c.token == ^token)
+    end
+  end
 end

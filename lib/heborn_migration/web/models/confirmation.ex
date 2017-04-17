@@ -41,4 +41,32 @@ defmodule HEBornMigration.Web.Confirmation do
     |> cast(%{}, [])
     |> put_assoc(:account, Account.confirm(struct.account))
   end
+
+  @spec confirm(String.t) ::
+    Ecto.Changeset.t
+  @doc """
+  Provides a changeset with confirmation code error.
+  """
+  def code_error(code) do
+    changeset =
+      %__MODULE__{}
+      |> Ecto.Changeset.cast(%{}, [])
+      |> Ecto.Changeset.put_change(:code, code)
+      |> Ecto.Changeset.add_error(:code, "is invalid")
+
+    %{changeset | action: :update}
+  end
+
+  defmodule Query do
+
+    alias HEBornMigration.Web.Confirmation
+
+    import Ecto.Query, only: [where: 3]
+
+    def by_code(query \\ Confirmation, code) do
+      code = String.downcase(code)
+
+      where(query, [c], c.code == ^code)
+    end
+  end
 end

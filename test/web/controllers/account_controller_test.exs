@@ -5,12 +5,10 @@ defmodule HEBornMigration.Web.AccountControllerTest do
   alias HEBornMigration.Repo
   alias HEBornMigration.Web.AccountController, as: Controller
   alias HEBornMigration.Web.Account
-  alias HEBornMigration.Web.Claim
-  alias HEBornMigration.Web.Confirmation
 
   alias HEBornMigration.Factory
 
-  @moduletag :unit
+  @moduletag :integration
 
   setup do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
@@ -80,47 +78,14 @@ defmodule HEBornMigration.Web.AccountControllerTest do
   describe "confirm/1" do
     test "succeeds with valid input" do
       account = Factory.insert(:account)
-      confirmed_account = Controller.confirm!(account.confirmation)
 
+      assert {:ok, confirmed_account} = Controller.confirm(account.confirmation)
       assert confirmed_account.confirmed
     end
 
-    test "raises FunctionClauseError with invalid input" do
-      account = Factory.insert(:account)
-
-      Repo.delete!(account.confirmation)
-      Repo.delete!(account)
-
-      assert_raise FunctionClauseError, fn ->
-        Controller.confirm!(account.confirmation)
-      end
-    end
-  end
-
-  describe "get_claim/1" do
-    test "succeeds when claim exists" do
-      claim = Factory.insert(:claim)
-      assert %Claim{} = Controller.get_claim(claim.token)
-    end
-
-    test "fails when claim doesn't exist" do
-      refute Controller.get_claim("00000000")
-    end
-  end
-
-  describe "get_confirmation/1" do
-    test "succeeds when confirmation exists" do
-      account =
-        :account
-        |> Factory.insert()
-        |> Repo.preload(:confirmation)
-
-      result = Controller.get_confirmation(account.confirmation.code)
-      assert %Confirmation{} = result
-    end
-
     test "fails when confirmation doesn't exist" do
-      refute Controller.get_confirmation("00000000")
+      assert {:error, cs} = Controller.confirm("")
+      assert :code in Keyword.keys(cs.errors)
     end
   end
 end

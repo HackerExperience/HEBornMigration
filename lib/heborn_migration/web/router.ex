@@ -16,12 +16,13 @@ defmodule HEBornMigration.Web.Router do
   scope "/", HEBornMigration.Web do
     pipe_through :browser # Use the default browser stack
 
-    get "/", PageController, :index
+    get "/", PageController, :get_migrate
+    post "/", PageController, :post_migrate
 
-    post "/claim", PageController, :claim
+    get "/confirm", PageController, :get_confirm
+    post "/confirm", PageController, :post_confirm
 
-    post "/migrate", PageController, :migrate
-
-    post "/confirm", PageController, :confirm
+    get "/claim/:username", PageController, :claim_by_link
+    get "/confirm/:code", PageController, :confirm_by_link
   end
 end

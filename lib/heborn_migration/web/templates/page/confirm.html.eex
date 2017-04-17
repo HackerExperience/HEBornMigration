@@ -1,0 +1,11 @@
+<div>
+  <h2><%= gettext "Confirm your account migration" %></h2>
+  <hr/>
+  <%= form_for @changeset, page_path(@conn, :post_confirm), fn f -> %><br />
+    <label><%= gettext "Confirmation Code" %>:</label>
+    <%= text_input f, :code %><br />
+    <%= error_tag f, :code %><br />
+
+    <%= submit "Confirm" %>
+  <% end %>
+</div>

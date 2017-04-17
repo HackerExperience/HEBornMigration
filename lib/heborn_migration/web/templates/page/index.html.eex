@@ -1,4 +1,3 @@
-
 <div>
   <h2><%= gettext "Migrate your HackerExperience account to HEBorn" %></h2>
   <hr/>
@@ -7,4 +6,23 @@
     <a href="#"><%= gettext "here" %></a>
     <span>.</span>
   </small>
+  <%= form_for @changeset, page_path(@conn, :post_migrate), fn f -> %><br />
+    <label><%= gettext "Token" %>:</label>
+    <%= text_input f, :token %><br />
+    <%= error_tag f, :token %><br />
+
+    <label><%= gettext "Email" %>:</label>
+    <%= text_input f, :email %><br />
+    <%= error_tag f, :email %><br />
+    
+    <label><%= gettext "Password" %>:</label>
+    <%= password_input f, :password %><br />
+    <%= error_tag f, :password %><br />
+    
+    <label><%= gettext "Confirm Password" %>:</label>
+    <%= password_input f, :password_confirmation %><br />
+    <%= error_tag f, :password_confirmation %><br />
+
+    <%= submit "Migrate" %>
+  <% end %>
 </div>

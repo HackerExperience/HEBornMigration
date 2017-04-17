@@ -1,0 +1,6 @@
+<div>
+  <h2><%= gettext "Account migration completed" %></h2>
+  <p>
+    <%= gettext "There's nothing left to do, you're ready to go." %>
+  </p>
+</div>

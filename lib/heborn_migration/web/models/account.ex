@@ -55,6 +55,8 @@ defmodule HEBornMigration.Web.Account do
 
     %__MODULE__{}
     |> changeset(params)
+    |> validate_confirmation(:password, required: true,
+      message: "does not match password")
     |> put_assoc(:confirmation, Confirmation.create())
   end
   def create(nil, email, password, password_confirmation) do
@@ -106,7 +108,6 @@ defmodule HEBornMigration.Web.Account do
     |> validate_change(:email, &validate_email/2)
     |> update_change(:email, &String.downcase/1)
     |> unique_constraint(:email)
-    |> validate_confirmation(:password)
     |> validate_length(:password, min: 8)
     |> update_change(:password, &Bcrypt.hashpwsalt/1)
     |> validate_required([:display_name, :username, :email, :password])

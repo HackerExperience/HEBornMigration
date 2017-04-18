@@ -43,19 +43,20 @@ defmodule HEBornMigration.Web.Service do
       with \
         {:ok, name} <- ClaimController.fetch_display_name(token),
         :ok <- ClaimController.delete(token),
-        {:ok, account} <- AccountController.create(name, email, passw0, passw1)
+        {:ok, account} <- AccountController.create(name, email, passw0, passw1),
+        confirmation_code = account.confirmation.code,
+        {:ok, _} <- EmailController.send_confirmation(email, confirmation_code)
       do
-        confirmation_code = account.confirmation.code
-        EmailController.send_confirmation(email, confirmation_code)
-
         account
       else
         :error ->
           email
           |> Account.invalid_token_changeset(passw0, passw1)
           |> Repo.rollback()
-        {:error, changeset} ->
+        {:error, changeset = %Ecto.Changeset{}} ->
           Repo.rollback(changeset)
+        _ ->
+          raise RuntimeError, "internal error"
       end
     end)
   end

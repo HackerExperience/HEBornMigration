@@ -6,7 +6,7 @@ config :heborn_migration,
 
 config :heborn_migration, HEBornMigration.Web.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "olDQeg9L+hxxUdn5QrPJBnDxhu4Kr2cVVEsHGzzeyKABmASbtc2s59pARcUcBxwe",
+  secret_key_base: System.get_env("HEBORN_MIGRATION_SECRET_KEY_BASE"),
   render_errors: [view: HEBornMigration.Web.ErrorView, accepts: ~w(html json)],
   pubsub: [name: HEBornMigration.PubSub,
            adapter: Phoenix.PubSub.PG2]

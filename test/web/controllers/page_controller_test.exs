@@ -9,12 +9,9 @@ defmodule HEBornMigration.Web.PageControllerTest do
   @moduletag :integration
 
   def get_token(conn) do
-    result =
-      conn
-      |> get("/claim/username")
-      |> json_response(200)
-
-    result["token"]
+    conn
+    |> get("/claim/username")
+    |> text_response(200)
   end
 
   describe "GET /" do
@@ -87,14 +84,18 @@ defmodule HEBornMigration.Web.PageControllerTest do
   end
 
   describe "GET /claim/:username" do
-    test "succeeds returning a json with the token", %{conn: conn} do
+    test "succeeds returning the token", %{conn: conn} do
       conn = get conn, "/claim/username"
-      assert %{"token" => _} = json_response(conn, 200)
+      assert text_response(conn, 200)
     end
 
-    test "fails returning json with the errors", %{conn: conn} do
-      conn = get conn, "/claim/@invalid~username"
-      assert %{"errors" => _} = json_response(conn, 422)
+    test "fails returning 500", %{conn: conn} do
+      response = assert_error_sent 500, fn ->
+        get conn, "/claim/@invalid~username"
+      end
+
+      assert {500, _, body} = response
+      assert "Internal server error" =~ body
     end
   end
 

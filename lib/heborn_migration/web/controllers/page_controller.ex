@@ -2,7 +2,6 @@ defmodule HEBornMigration.Web.PageController do
   use HEBornMigration.Web, :controller
 
   alias HEBornMigration.Web.Account
-  alias HEBornMigration.Web.Claim
   alias HEBornMigration.Web.Confirmation
   alias HEBornMigration.Web.Service
 
@@ -54,18 +53,8 @@ defmodule HEBornMigration.Web.PageController do
   @doc """
   Claims account by link, used from PHP HE1.
   """
-  def claim_by_link(conn, %{"username" => display_name}) do
-    case Service.claim(display_name) do
-      {:ok, token} ->
-        json conn, %{token: token}
-      {:error, changeset} ->
-        data = Claim.format_error(changeset)
-
-        conn
-        |> put_status(422)
-        |> json(%{errors: data})
-    end
-  end
+  def claim_by_link(conn, %{"username" => display_name}),
+    do: text conn, Service.claim!(display_name)
 
   @doc """
   Confirms account by link, the link that leads here maybe clicked from some

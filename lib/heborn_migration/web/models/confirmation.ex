@@ -3,7 +3,7 @@ defmodule HEBornMigration.Web.Confirmation do
   use Ecto.Schema
 
   alias HEBornMigration.Web.Account
-  alias HEBornMigration.Web.TokenController
+  alias HEBornMigration.Web.Token
 
   import Ecto.Changeset
 
@@ -28,7 +28,7 @@ defmodule HEBornMigration.Web.Confirmation do
 
   @doc false
   def create do
-    %__MODULE__{code: TokenController.generate()}
+    %__MODULE__{code: Token.generate()}
   end
 
   @spec confirm(t) ::
@@ -42,18 +42,19 @@ defmodule HEBornMigration.Web.Confirmation do
     |> put_assoc(:account, Account.confirm(struct.account))
   end
 
-  @spec confirm(String.t) ::
+  @spec invalid_code_changeset(code) ::
     Ecto.Changeset.t
   @doc """
   Provides a changeset with confirmation code error.
   """
-  def code_error(code) do
+  def invalid_code_changeset(code) do
     changeset =
       %__MODULE__{}
       |> Ecto.Changeset.cast(%{}, [])
       |> Ecto.Changeset.put_change(:code, code)
       |> Ecto.Changeset.add_error(:code, "is invalid")
 
+    # phoenix only displays errors from changeset with actions
     %{changeset | action: :update}
   end
 

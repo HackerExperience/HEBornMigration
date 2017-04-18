@@ -2,7 +2,8 @@ defmodule HEBornMigration.Web.Claim do
 
   use Ecto.Schema
 
-  alias HEBornMigration.Web.TokenController
+  alias HEBornMigration.Web.Account
+  alias HEBornMigration.Web.Token
 
   import Ecto.Changeset
 
@@ -21,10 +22,36 @@ defmodule HEBornMigration.Web.Claim do
     field :display_name, :string, size: 15
   end
 
-  @spec create(String.t) ::
+  @spec create(Account.display_name) ::
     Ecto.Changeset.t
   def create(display_name),
     do: changeset(%{display_name: display_name})
+
+  @spec unclaimable_changeset(Account.display_name) ::
+    Ecto.Changeset.t
+  @doc """
+  Returns a changeset with `display_name` error, used when trying to migrate an
+  already migrated account.
+  """
+  def unclaimable_changeset(display_name) do
+    changeset =
+      display_name
+      |> create()
+      |> add_error(:display_name, "has been taken")
+
+    # phoenix only displays errors from changeset with actions
+    %{changeset | action: :insert}
+  end
+
+  @doc false
+  def changeset(struct \\ %__MODULE__{}, params) do
+    struct
+    |> cast(params, [:display_name])
+    |> validate_required([:display_name])
+    |> validate_change(:display_name, &validate_display_name/2)
+    |> unique_constraint(:display_name)
+    |> put_change(:token, Token.generate())
+  end
 
   @spec format_error(Ecto.Changeset.t) ::
     %{atom => [String.t]}
@@ -37,16 +64,6 @@ defmodule HEBornMigration.Web.Claim do
         String.replace(acc, "%{#{key}}", to_string(value))
       end)
     end)
-  end
-
-  @doc false
-  def changeset(struct \\ %__MODULE__{}, params) do
-    struct
-    |> cast(params, [:display_name])
-    |> validate_required([:display_name])
-    |> validate_change(:display_name, &validate_display_name/2)
-    |> unique_constraint(:display_name)
-    |> put_change(:token, TokenController.generate())
   end
 
   @spec validate_display_name(:display_name, String.t) ::
@@ -63,14 +80,21 @@ defmodule HEBornMigration.Web.Claim do
 
   defmodule Query do
 
+    alias HEBornMigration.Web.Account
     alias HEBornMigration.Web.Claim
 
     import Ecto.Query, only: [where: 3]
 
+    @spec by_token(Ecto.Queryable.t, Claim.token) :: Ecto.Queryable.t
     def by_token(query \\ Claim, token) do
       token = String.downcase(token)
 
       where(query, [c], c.token == ^token)
     end
+
+    @spec by_display_name(Ecto.Queryable.t, Account.display_name) ::
+      Ecto.Queryable.t
+    def by_display_name(query \\ Claim, display_name),
+      do: where(query, [c], c.display_name == ^display_name)
   end
 end

@@ -1,13 +1,13 @@
-defmodule HEBornMigration.Web.TokenControllerTest do
+defmodule HEBornMigration.Web.TokenTest do
 
   use ExUnit.Case, async: true
 
-  alias HEBornMigration.Web.TokenController
+  alias HEBornMigration.Web.Token
 
   describe "generate/0" do
     @tag :unit
     test "generates a token with 10 characters" do
-      token = TokenController.generate()
+      token = Token.generate()
       assert String.length(token) == 10
     end
 
@@ -17,7 +17,7 @@ defmodule HEBornMigration.Web.TokenControllerTest do
 
       tokens =
         for _ <- 1..token_count,
-          do: TokenController.generate()
+          do: Token.generate()
 
       unique_token_count =
         tokens

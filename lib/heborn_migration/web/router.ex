@@ -14,7 +14,7 @@ defmodule HEBornMigration.Web.Router do
   end
 
   scope "/", HEBornMigration.Web do
-    pipe_through :browser # Use the default browser stack
+    pipe_through :browser
 
     get "/", PageController, :get_migrate
     post "/", PageController, :post_migrate

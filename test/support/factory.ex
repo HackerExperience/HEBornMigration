@@ -59,18 +59,22 @@ defmodule HEBornMigration.Factory do
     map
   def params_for(:account) do
     %{
-      claim: build(:claim),
+      display_name: generate_display_name(),
       email: Burette.Internet.email(),
       password: Burette.Internet.password()
     }
   end
   def params_for(:claim),
-    do: %{display_name: String.slice(Burette.Internet.username(), 0..14)}
+    do: %{display_name: generate_display_name()}
 
   @spec fabricate_changeset(thing, map) ::
     Ecto.Changeset.t
   defp fabricate_changeset(:account, params) do
-    Account.create(params.claim, params.email, params.password, params.password)
+    Account.create(
+      params.display_name,
+      params.email,
+      params.password,
+      params.password)
   end
   defp fabricate_changeset(:claim, params) do
     Claim.create(params.display_name)
@@ -85,4 +89,8 @@ defmodule HEBornMigration.Factory do
     do: cs
   defp ensure_valid_changeset(cs),
     do: raise "invalid changeset generated on factory: #{inspect cs}"
+
+  defp generate_display_name do
+    String.slice(Burette.Internet.username(), 0..14)
+  end
 end

@@ -25,7 +25,7 @@ defmodule HEBornMigration.Web.PageControllerTest do
   end
 
   describe "POST /" do
-    test "succeeds with valid input", %{conn: conn} do
+    test "succeeds returning the migration in progress page", %{conn: conn} do
       token = get_token(conn)
 
       params = %{
@@ -41,7 +41,7 @@ defmodule HEBornMigration.Web.PageControllerTest do
       assert html_response(conn, 200) =~ "almost ready!"
     end
 
-    test "fails with invalid input", %{conn: conn} do
+    test "fails returning the home page with input errors", %{conn: conn} do
       params = %{
         account: %{
           token: "",
@@ -52,7 +52,7 @@ defmodule HEBornMigration.Web.PageControllerTest do
       }
 
       conn = post(conn, "/", params)
-      refute html_response(conn, 200) =~ "almost ready!"
+      assert html_response(conn, 200) =~ "Migrate"
     end
   end
 
@@ -64,7 +64,7 @@ defmodule HEBornMigration.Web.PageControllerTest do
   end
 
   describe "POST /confirm" do
-    test "succeeds with valid input", %{conn: conn} do
+    test "succeeds returning the migration completed page", %{conn: conn} do
       code =
         :account
         |> Factory.insert()
@@ -78,28 +78,28 @@ defmodule HEBornMigration.Web.PageControllerTest do
       assert html_response(conn, 200) =~ "migration completed"
     end
 
-    test "fails with invalid input", %{conn: conn} do
+    test "fails returning the confirm page with input errors", %{conn: conn} do
       params = %{confirmation: %{code: ""}}
 
       conn = post(conn, "/confirm", params)
-      refute html_response(conn, 200) =~ "migration completed"
+      assert html_response(conn, 200) =~ "Confirm your account migration"
     end
   end
 
   describe "GET /claim/:username" do
-    test "succeeds returning json with token", %{conn: conn} do
+    test "succeeds returning a json with the token", %{conn: conn} do
       conn = get conn, "/claim/username"
       assert %{"token" => _} = json_response(conn, 200)
     end
 
-    test "fails returning json with errors", %{conn: conn} do
+    test "fails returning json with the errors", %{conn: conn} do
       conn = get conn, "/claim/@invalid~username"
       assert %{"errors" => _} = json_response(conn, 422)
     end
   end
 
   describe "GET /confirm/:code" do
-    test "succeeds with valid input", %{conn: conn} do
+    test "succeeds returning the migration completed page", %{conn: conn} do
       code =
         :account
         |> Factory.insert()
@@ -111,9 +111,9 @@ defmodule HEBornMigration.Web.PageControllerTest do
       assert html_response(conn, 200) =~ "migration completed"
     end
 
-    test "fails with invalid input", %{conn: conn} do
+    test "fails returning the confirm page with input errors", %{conn: conn} do
       conn = get(conn, "/confirm/0")
-      refute html_response(conn, 200) =~ "migration completed"
+      assert html_response(conn, 200) =~ "Confirm your account migration"
     end
   end
 end

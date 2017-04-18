@@ -2,7 +2,8 @@ use Mix.Config
 
 config :heborn_migration,
   namespace: HEBornMigration,
-  ecto_repos: [HEBornMigration.Repo]
+  ecto_repos: [HEBornMigration.Repo],
+  claim_secret: System.get_env("HEBORN_MIGRATION_CLAIM_SECRET")
 
 config :heborn_migration, HEBornMigration.Web.Endpoint,
   url: [host: "localhost"],

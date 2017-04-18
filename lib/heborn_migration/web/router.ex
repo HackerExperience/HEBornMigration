@@ -22,7 +22,7 @@ defmodule HEBornMigration.Web.Router do
     get "/confirm", PageController, :get_confirm
     post "/confirm", PageController, :post_confirm
 
-    get "/claim/:username", PageController, :claim_by_link
+    get "/claim/:secret/:username", PageController, :claim_by_link
     get "/confirm/:code", PageController, :confirm_by_link
   end
 end

@@ -1,6 +1,7 @@
 use Mix.Config
 
 config :heborn_migration, HEBornMigration.Web.Endpoint,
+  code_reloader: false,
   on_init: {HEBornMigration.Web.Endpoint, :load_from_system_env, []},
   url: [host: "example.com", port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json"

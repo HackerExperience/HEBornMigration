@@ -8,13 +8,12 @@ defmodule HEBornMigration.Web.PageControllerTest do
 
   @moduletag :integration
 
-  def get_token(conn) do
-    result =
-      conn
-      |> get("/claim/username")
-      |> json_response(200)
+  @secret Application.fetch_env!(:heborn_migration, :claim_secret)
 
-    result["token"]
+  def get_token(conn) do
+    conn
+    |> get("/claim/#{@secret}/username")
+    |> text_response(200)
   end
 
   describe "GET /" do
@@ -86,15 +85,24 @@ defmodule HEBornMigration.Web.PageControllerTest do
     end
   end
 
-  describe "GET /claim/:username" do
-    test "succeeds returning a json with the token", %{conn: conn} do
-      conn = get conn, "/claim/username"
-      assert %{"token" => _} = json_response(conn, 200)
+  describe "GET /claim/:secret/:username" do
+    test "succeeds returning the token", %{conn: conn} do
+      conn = get conn, "/claim/#{@secret}/username"
+      assert text_response(conn, 200)
     end
 
-    test "fails returning json with the errors", %{conn: conn} do
-      conn = get conn, "/claim/@invalid~username"
-      assert %{"errors" => _} = json_response(conn, 422)
+    test "fails gracefully return 500 with invalid secret", %{conn: conn} do
+      conn = get conn, "/claim/wat/username"
+      assert text_response(conn, 500) =~ "Internal server error"
+    end
+
+    test "fails returning 500 with invalid name", %{conn: conn} do
+      response = assert_error_sent 500, fn ->
+        get conn, "/claim/#{@secret}/@invalid~username"
+      end
+
+      assert {500, _, body} = response
+      assert body =~ "Internal server error"
     end
   end
 

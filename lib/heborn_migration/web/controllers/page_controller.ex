@@ -2,9 +2,10 @@ defmodule HEBornMigration.Web.PageController do
   use HEBornMigration.Web, :controller
 
   alias HEBornMigration.Web.Account
-  alias HEBornMigration.Web.Claim
   alias HEBornMigration.Web.Confirmation
   alias HEBornMigration.Web.Service
+
+  @secret Application.fetch_env!(:heborn_migration, :claim_secret)
 
   @doc """
   The standard index route, features a migration form.
@@ -54,16 +55,13 @@ defmodule HEBornMigration.Web.PageController do
   @doc """
   Claims account by link, used from PHP HE1.
   """
-  def claim_by_link(conn, %{"username" => display_name}) do
-    case Service.claim(display_name) do
-      {:ok, token} ->
-        json conn, %{token: token}
-      {:error, changeset} ->
-        data = Claim.format_error(changeset)
-
-        conn
-        |> put_status(422)
-        |> json(%{errors: data})
+  def claim_by_link(conn, %{"username" => display_name, "secret" => secret}) do
+    if secret == @secret do
+      text conn, Service.claim!(display_name)
+    else
+      conn
+      |> put_status(500)
+      |> text("Internal server error")
     end
   end
 

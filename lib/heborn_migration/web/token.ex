@@ -6,28 +6,26 @@ defmodule HEBornMigration.Web.Token do
   It's proven to cause no conflicts for 1kk tokens.
   """
 
-  @token_length 10
-
   @token_characters \
     '1234567890abcdefghijklmnopqrstuvwxyz'
     |> Enum.map(&([&1]))
     |> Enum.with_index()
 
-  @charnum_cache Enum.count(@token_characters)
+  @charcode_cache Enum.count(@token_characters)
 
-  @spec generate :: String.t
+  @spec generate(pos_integer) :: String.t
   @doc """
-  Generates a random token of `@token_length`'s length containing characters
+  Generates a random token of given length containing characters
   from `@token_characters`.
   """
-  def generate,
-    do: :erlang.list_to_binary(random_number_list())
+  def generate(length \\ 10),
+    do: :erlang.list_to_binary(random_number_list(length))
 
-  @spec random_number_list :: [pos_integer]
+  @spec random_number_list(pos_integer) :: [pos_integer]
   # uses a PRNG algorithm as it will just generate ~600k tokens
-  defp random_number_list do
-    for _ <- 1..@token_length do
-      (:rand.uniform() * @charnum_cache)
+  defp random_number_list(length) do
+    for _ <- 1..length do
+      (:rand.uniform() * @charcode_cache)
       |> Float.floor()
       |> trunc()
       |> to_token_character()

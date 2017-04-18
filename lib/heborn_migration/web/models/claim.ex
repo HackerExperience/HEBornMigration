@@ -53,19 +53,6 @@ defmodule HEBornMigration.Web.Claim do
     |> put_change(:token, Token.generate())
   end
 
-  @spec format_error(Ecto.Changeset.t) ::
-    %{atom => [String.t]}
-  @doc """
-  Formats changeset errors
-  """
-  def format_error(changeset) do
-    traverse_errors(changeset, fn {msg, opts} ->
-      Enum.reduce(opts, msg, fn {key, value}, acc ->
-        String.replace(acc, "%{#{key}}", to_string(value))
-      end)
-    end)
-  end
-
   @spec validate_display_name(:display_name, String.t) ::
     []
     | [display_name: String.t]

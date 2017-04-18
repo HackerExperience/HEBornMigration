@@ -15,4 +15,18 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+config :heborn_migration, HEBornMigration.Web.Mailer,
+  adapter: Bamboo.SMTPAdapter,
+  server: System.get_env("HEBORN_MIGRATION_SMTP_HOST"),
+  port: System.get_env("HEBORN_MIGRATION_SMTP_PORT") || 587,
+  username: System.get_env("HEBORN_MIGRATION_LOGIN"),
+  password: System.get_env("HEBORN_MIGRATION_PASSWORD"),
+  tls: :if_available,
+  ssl: false,
+  retries: 2
+
+config :helf, HELF.Mailer,
+  mailers: [HEBornMigration.Web.Mailer],
+  default_sender: "contact@hackerexperience.com"
+
 import_config "#{Mix.env}.exs"

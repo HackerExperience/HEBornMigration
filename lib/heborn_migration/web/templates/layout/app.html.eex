@@ -7,10 +7,9 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Hello HEBornMigration!</title>
+    <title>HE1 to HEBorn Migration</title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
-
   <body>
     <div>
       <header>

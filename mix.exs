@@ -34,7 +34,13 @@ defmodule HEBornMigration.Mixfile do
   def application do
     [
       mod: {HEBornMigration.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [
+        :logger,
+        :runtime_tools,
+        :crypto,
+        :bamboo,
+        :bamboo_smtp
+      ]
     ]
   end
 
@@ -52,6 +58,7 @@ defmodule HEBornMigration.Mixfile do
       {:postgrex, ">= 0.0.0"},
 
       {:helf, github: "HackerExperience/HELF"},
+      {:bamboo_smtp, "~> 1.3.0"},
       {:comeonin, "~> 2.5"},
       {:gettext, "~> 0.11"},
 

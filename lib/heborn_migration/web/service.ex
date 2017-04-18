@@ -31,19 +31,8 @@ defmodule HEBornMigration.Web.Service do
     case claim(display_name) do
       {:ok, token} ->
         token
-      {:error, cs} ->
-        errors = Keyword.keys(cs.errors)
-        message =
-          cond do
-            :display_name in errors ->
-              "invalid display_name"
-            :token in errors ->
-              "token collision"
-            true ->
-              "unknown error"
-          end
-
-        raise RuntimeError, message
+      {:error, _} ->
+        raise RuntimeError, "user already migrated"
     end
   end
 

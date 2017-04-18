@@ -1,25 +1,21 @@
 <div>
-  <h2><%= gettext "Migrate your HackerExperience account to HEBorn" %></h2>
+  <h2>Migrate your HackerExperience account to HEBorn</h2>
   <hr/>
-  <small>
-    <span><%= gettext "No token yet? Generate it" %></span>
-    <a href="#"><%= gettext "here" %></a>
-    <span>.</span>
-  </small>
+  <small><span>No token yet? Generate it <a href="#">here</a></span></small>
   <%= form_for @changeset, page_path(@conn, :post_migrate), fn f -> %><br />
-    <label><%= gettext "Token" %>:</label>
+    <label>Token:</label>
     <%= text_input f, :token %><br />
     <%= error_tag f, :token %><br />
 
-    <label><%= gettext "Email" %>:</label>
+    <label>Email:</label>
     <%= text_input f, :email %><br />
     <%= error_tag f, :email %><br />
     
-    <label><%= gettext "Password" %>:</label>
+    <label>Password:</label>
     <%= password_input f, :password %><br />
     <%= error_tag f, :password %><br />
     
-    <label><%= gettext "Confirm Password" %>:</label>
+    <label>Confirm Password:</label>
     <%= password_input f, :password_confirmation %><br />
     <%= error_tag f, :password_confirmation %><br />
 

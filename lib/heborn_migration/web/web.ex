@@ -4,7 +4,6 @@ defmodule HEBornMigration.Web do
       use Phoenix.Controller, namespace: HEBornMigration.Web
       import Plug.Conn
       import HEBornMigration.Web.Router.Helpers
-      import HEBornMigration.Web.Gettext
     end
   end
 
@@ -20,7 +19,6 @@ defmodule HEBornMigration.Web do
 
       import HEBornMigration.Web.Router.Helpers
       import HEBornMigration.Web.ErrorHelpers
-      import HEBornMigration.Web.Gettext
     end
   end
 
@@ -35,7 +33,6 @@ defmodule HEBornMigration.Web do
   def channel do
     quote do
       use Phoenix.Channel
-      import HEBornMigration.Web.Gettext
     end
   end
 

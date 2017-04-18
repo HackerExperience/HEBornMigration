@@ -1,0 +1,6 @@
+<p>Click <a href="<%= @link_with_code %>">here</a> to confirm your account</p>
+<p>
+  Trouble with the link?<br/>
+  Access <%= @link %> and use the following code to confirm your account:
+</p>
+<pre><%= @code %></pre>

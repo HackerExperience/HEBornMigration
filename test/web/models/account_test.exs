@@ -19,7 +19,6 @@ defmodule HEBornMigration.Web.AccountTest do
     end
 
     test "validate fields" do
-      # REVIEW: maybe use a random data generator for invalid params
       invalid_name = "()&*ç@"
       short_password = "v"
       invalid_email = "invalid.email"
@@ -34,7 +33,13 @@ defmodule HEBornMigration.Web.AccountTest do
       assert :email in Keyword.keys(cs.errors)
       refute cs.valid?
 
-      # FIXME: add password_confirmation validation test
+      cs = Account.create(
+        invalid_name,
+        invalid_email,
+        short_password,
+        invalid_email)
+
+      assert :password_confirmation in Keyword.keys(cs.errors)
     end
   end
 

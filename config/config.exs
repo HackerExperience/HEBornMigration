@@ -1,21 +1,24 @@
 use Mix.Config
 
-config :heborn_migration,
-  namespace: HEBornMigration,
-  ecto_repos: [HEBornMigration.Repo],
-  claim_secret: System.get_env("HEBORN_MIGRATION_CLAIM_SECRET")
-
-config :heborn_migration, HEBornMigration.Web.Endpoint,
-  url: [host: "localhost"],
-  secret_key_base: System.get_env("HEBORN_MIGRATION_SECRET_KEY_BASE"),
-  render_errors: [view: HEBornMigration.Web.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: HEBornMigration.PubSub,
-           adapter: Phoenix.PubSub.PG2]
-
+# logger configs
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# repo configs
+config :heborn_migration, HEBornMigration.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "postgres",
+  database: "heborn_migration_dev",
+  hostname: "localhost"
+
+# project namespace and repos
+config :heborn_migration,
+  namespace: HEBornMigration,
+  ecto_repos: [HEBornMigration.Repo]
+
+# smtp mailer config
 config :heborn_migration, HEBornMigration.Web.Mailer,
   adapter: Bamboo.SMTPAdapter,
   server: System.get_env("HEBORN_MIGRATION_SMTP_HOST"),
@@ -26,8 +29,13 @@ config :heborn_migration, HEBornMigration.Web.Mailer,
   ssl: false,
   retries: 3
 
-config :helf, HELF.Mailer,
-  mailers: [HEBornMigration.Web.Mailer],
-  default_sender: "contact@hackerexperience.com"
+# phoenix endpoint config
+config :heborn_migration, HEBornMigration.Web.Endpoint,
+  url: [host: "localhost"],
+  secret_key_base: System.get_env("HEBORN_MIGRATION_SECRET_KEY_BASE"),
+  render_errors: [view: HEBornMigration.Web.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: HEBornMigration.PubSub,
+           adapter: Phoenix.PubSub.PG2]
 
+# import env-specific configs
 import_config "#{Mix.env}.exs"

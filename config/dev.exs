@@ -1,5 +1,27 @@
 use Mix.Config
 
+# logger config
+config :logger, :console, format: "[$level] $message\n"
+
+# repo configs, large timeout cause SMTP latency is high from office
+config :heborn_migration, HEBornMigration.Repo,
+  pool_size: 4,
+  timeout: 60_000,
+  pool_timeout: 60_000
+
+# comeonim bcrypt rounds
+config :comeonin, :bcrypt_log_rounds, 2
+
+# claim route secret
+config :heborn_migration,
+  claim_secret: "secret"
+
+# config helf to use the smtp mailer
+config :helf, HELF.Mailer,
+  mailers: [HEBornMigration.Web.Mailer],
+  default_sender: "contact@hackerexperience.com"
+
+# endpoint config
 config :heborn_migration, HEBornMigration.Web.Endpoint,
   http: [port: 4000],
   debug_errors: true,
@@ -8,6 +30,7 @@ config :heborn_migration, HEBornMigration.Web.Endpoint,
   watchers: [node: ["node_modules/brunch/bin/brunch", "watch", "--stdin",
                     cd: Path.expand("../assets", __DIR__)]]
 
+# livereload config
 config :heborn_migration, HEBornMigration.Web.Endpoint,
   live_reload: [
     patterns: [
@@ -18,16 +41,5 @@ config :heborn_migration, HEBornMigration.Web.Endpoint,
     ]
   ]
 
-config :logger, :console, format: "[$level] $message\n"
-
+# phoenix errors config
 config :phoenix, :stacktrace_depth, 20
-
-config :heborn_migration, HEBornMigration.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "heborn_migration_dev",
-  hostname: "localhost",
-  pool_size: 10,
-  timeout: 60_000,
-  pool_timeout: 60_000

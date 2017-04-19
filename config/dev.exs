@@ -28,4 +28,6 @@ config :heborn_migration, HEBornMigration.Repo,
   password: "postgres",
   database: "heborn_migration_dev",
   hostname: "localhost",
-  pool_size: 10
+  pool_size: 10,
+  timeout: 60_000,
+  pool_timeout: 60_000

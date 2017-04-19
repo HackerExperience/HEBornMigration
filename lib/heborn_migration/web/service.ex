@@ -65,6 +65,7 @@ defmodule HEBornMigration.Web.Service do
         {:error, changeset = %Ecto.Changeset{}} ->
           Repo.rollback(changeset)
         _ ->
+          # usually breaks when mailer times out
           raise RuntimeError, "internal error"
       end
     end)

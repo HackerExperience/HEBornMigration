@@ -24,7 +24,7 @@ config :heborn_migration, HEBornMigration.Web.Mailer,
   password: System.get_env("HEBORN_MIGRATION_PASSWORD"),
   tls: :if_available,
   ssl: false,
-  retries: 2
+  retries: 3
 
 config :helf, HELF.Mailer,
   mailers: [HEBornMigration.Web.Mailer],

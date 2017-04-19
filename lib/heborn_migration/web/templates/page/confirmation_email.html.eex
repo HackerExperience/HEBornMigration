@@ -1,6 +1,6 @@
-<p>Click <a href="<%= @link_with_code %>">here</a> to confirm your account</p>
-<p>
-  Trouble with the link?<br/>
-  Access <%= @link %> and use the following code to confirm your account:
-</p>
-<pre><%= @code %></pre>
+<header>
+<h1 style="font-size: 2em; margin: .67em 0;">Confirm your HEBorn account</h1>
+</header>
+<p style="line-height:1.5rem; margin-bottom:0">Click <a href="<%= @link_with_code %>">here</a> to confirm your account.</p>
+<p style="line-height:1.5rem;  margin-bottom:0">Trouble with the link?<br/>Access <%= @link %> and use the following code to confirm your account:</p>
+<pre style="border:1px solid Black; padding: 0.5rem;"><%= @code %></pre>

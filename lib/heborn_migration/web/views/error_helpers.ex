@@ -8,7 +8,7 @@ defmodule HEBornMigration.Web.ErrorHelpers do
           String.replace(acc, "%{#{key}}", to_string(value))
         end)
 
-      content_tag :span, error, class: "help-block"
+      content_tag :span, error, class: "pure-form-message"
     end
   end
 end

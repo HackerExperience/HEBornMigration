@@ -1,11 +1,41 @@
-<div>
-  <h2>Confirm your account migration</h2>
-  <hr/>
-  <%= form_for @changeset, page_path(@conn, :post_confirm), fn f -> %><br />
-    <label>Confirmation Code:</label>
-    <%= text_input f, :code %><br />
-    <%= error_tag f, :code %><br />
+<header class="page-header">
+  <h2 class="page-title">
+    Confirm your account
+  </h2>
+</header>
+<div class="page-content">
+  <p>
+    Finish your migration by confirming your account, you should receive an email with the confirmation code anytime soon.
+  </p>
 
-    <%= submit "Confirm" %>
+  <small>
+    <p>
+      No confirmation email yet?<br/>
+      It's possible to restart the migration process of unconfirmed accounts
+      after 48 hours, so you should be able to retry:
+      <strong>
+        just wait the time and try generating the migration token again
+      </strong>.
+    </p>
+  </small>
+
+  <%= form_for @changeset,
+    page_path(@conn, :post_confirm),
+    [class: "pure-form pure-form-stacked"],
+    fn f -> %>
+    <fieldset>
+
+      <label for="code">
+        Confirmation Code:
+      </label>
+      <%= text_input f, :code,
+            id: "code",
+            placeholder: "Code" %>
+      <%= error_tag f, :code %>
+
+      <br />
+      <%= submit "Confirm", class: "pure-button pure-button-active" %>
+
+    </fieldset>
   <% end %>
 </div>

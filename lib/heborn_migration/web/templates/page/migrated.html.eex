@@ -1,9 +1,18 @@
-<div>
-  <h2>You're almost ready!</h2>
+<header class="page-header">
+  <h2 class="page-title">
+    You're almost ready!
+  </h2>
+</header>
+<div class="page-content">
   <p>We've sent a confirmation email to <%= @email %></p>
-  <hr/>
   <small>
-    <span>No message yet? Used the wrong email?</span>
-    <span>Try migrating again after 48 hours</span>
+    <p>
+      No confirmation email yet?<br/>
+      It's possible to restart the migration process of unconfirmed accounts
+      after 48 hours, so you should be able to retry:
+      <strong>
+        just wait the time and try generating the migration token again.
+      </strong>
+    </p>
   </small>
 </div>

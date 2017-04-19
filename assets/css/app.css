@@ -148,3 +148,7 @@ label {
     bottom: 0;
   }
 }
+
+.pure-form-message {
+  color: #b94a48;
+}

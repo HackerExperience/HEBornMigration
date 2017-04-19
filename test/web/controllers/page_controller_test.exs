@@ -2,7 +2,6 @@ defmodule HEBornMigration.Web.PageControllerTest do
   use HEBornMigration.Web.ConnCase, async: true
 
   alias HEBornMigration.Repo
-  # alias HEBornMigration.Web.Account
 
   alias HEBornMigration.Factory
 
@@ -58,7 +57,7 @@ defmodule HEBornMigration.Web.PageControllerTest do
   describe "GET /confirm" do
     test "returns the confirmation page", %{conn: conn} do
       conn = get conn, "/confirm"
-      assert html_response(conn, 200) =~ "Confirm your account migration"
+      assert html_response(conn, 200) =~ "Finish your migration by confirming"
     end
   end
 
@@ -74,14 +73,14 @@ defmodule HEBornMigration.Web.PageControllerTest do
       params = %{confirmation: %{code: code}}
 
       conn = post(conn, "/confirm", params)
-      assert html_response(conn, 200) =~ "migration completed"
+      assert html_response(conn, 200) =~ "Your HEBorn account is ready"
     end
 
     test "fails returning the confirm page with input errors", %{conn: conn} do
       params = %{confirmation: %{code: ""}}
 
       conn = post(conn, "/confirm", params)
-      assert html_response(conn, 200) =~ "Confirm your account migration"
+      assert html_response(conn, 200) =~ "Finish your migration by confirming"
     end
   end
 
@@ -116,12 +115,12 @@ defmodule HEBornMigration.Web.PageControllerTest do
         |> Map.fetch!(:code)
 
       conn = get(conn, "/confirm/#{code}")
-      assert html_response(conn, 200) =~ "migration completed"
+      assert html_response(conn, 200) =~ "Your HEBorn account is ready"
     end
 
     test "fails returning the confirm page with input errors", %{conn: conn} do
       conn = get(conn, "/confirm/0")
-      assert html_response(conn, 200) =~ "Confirm your account migration"
+      assert html_response(conn, 200) =~ "Finish your migration by confirming"
     end
   end
 end

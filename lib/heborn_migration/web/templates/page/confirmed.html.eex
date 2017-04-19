@@ -1,4 +1,11 @@
-<div>
-  <h2>Account migration completed</h2>
-  <p>There's nothing left to do, you're ready to go.</p>
+<header class="page-header">
+  <h2 class="page-title">
+    Your HEBorn account is ready
+  </h2>
+</header>
+<div class="page-content">
+  <p>
+    There's nothing left to do, you're ready to go.</br>
+    We hope you enjoy the game.
+  </p>
 </div>

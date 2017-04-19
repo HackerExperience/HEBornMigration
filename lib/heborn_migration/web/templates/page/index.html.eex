@@ -1,24 +1,53 @@
-<div>
-  <h2>Migrate your HackerExperience account to HEBorn</h2>
-  <hr/>
-  <small><span>No token yet? Generate it <a href="#">here</a></span></small>
-  <%= form_for @changeset, page_path(@conn, :post_migrate), fn f -> %><br />
-    <label>Token:</label>
-    <%= text_input f, :token %><br />
-    <%= error_tag f, :token %><br />
+<header class="page-header">
+  <h2 class="page-title">
+    Migrate to HEBorn
+  </h2>
+</header>
+<div class="page-content">
+  <p>
+    Migrate your old HE username to HEBorn using your migration token.
+  </p>
+  <%= form_for @changeset,
+        page_path(@conn, :post_migrate),
+        [class: "pure-form pure-form-stacked"],
+        fn f -> %>
+    <fieldset>
+      
+      <label for="token">
+        Token:
+      </label>
+      <%= text_input f, :token,
+            id: "token",
+            placeholder: "Migration Token" %>
+      <%= error_tag f, :token %>
 
-    <label>Email:</label>
-    <%= text_input f, :email %><br />
-    <%= error_tag f, :email %><br />
-    
-    <label>Password:</label>
-    <%= password_input f, :password %><br />
-    <%= error_tag f, :password %><br />
-    
-    <label>Confirm Password:</label>
-    <%= password_input f, :password_confirmation %><br />
-    <%= error_tag f, :password_confirmation %><br />
+      <label for="email">
+        Email:
+      </label>
+      <%= text_input f, :email,
+            id: "email",
+            type: "email",
+            placeholder: "Email" %>
+      <%= error_tag f, :email %>
 
-    <%= submit "Migrate" %>
+      <label for="password">
+        Password:
+      </label>
+      <%= password_input f, :password,
+            id: "password",
+            placeholder: "Password" %>
+      <%= error_tag f, :password %>
+
+      <label for="password_confirmation">
+        Confirm Password:
+      </label>
+      <%= password_input f, :password_confirmation,
+            id: "password_confirmation",
+            placeholder: "Retype Password" %>
+      <%= error_tag f, :password_confirmation %>
+
+      <br />
+      <%= submit "Migrate", class: "pure-button pure-button-active" %>
+    </fieldset>
   <% end %>
 </div>

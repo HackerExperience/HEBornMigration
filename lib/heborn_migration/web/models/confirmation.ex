@@ -3,7 +3,6 @@ defmodule HEBornMigration.Web.Confirmation do
   use Ecto.Schema
 
   alias HEBornMigration.Web.Account
-  alias HEBornMigration.Web.Token
 
   import Ecto.Changeset
 
@@ -15,6 +14,7 @@ defmodule HEBornMigration.Web.Confirmation do
   }
 
   @primary_key false
+  @ecto_autogenerate {:code, {UUID, :uuid4, []}}
   schema "confirmations" do
     field :code, :string,
       primary_key: true
@@ -28,7 +28,7 @@ defmodule HEBornMigration.Web.Confirmation do
 
   @doc false
   def create do
-    %__MODULE__{code: Token.generate()}
+    %__MODULE__{}
   end
 
   @spec confirm(t) ::

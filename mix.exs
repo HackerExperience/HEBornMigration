@@ -21,11 +21,9 @@ defmodule HEBornMigration.Mixfile do
       dialyzer: [plt_add_apps: [:mix, :phoenix_pubsub]],
 
       preferred_cli_env: %{
-        "test.quick": :test,
         "test.full": :test,
         "test.unit": :test,
         "test.integration": :test,
-        "test.heavy": :test,
         "pr": :test
       },
     ]
@@ -65,6 +63,7 @@ defmodule HEBornMigration.Mixfile do
       {:burette,
         github: "HackerExperience/burette",
         only: :test},
+      {:uuid, "~> 1.1"},
       {:credo, "~> 0.7", only: [:dev, :test]}
     ]
   end
@@ -73,16 +72,14 @@ defmodule HEBornMigration.Mixfile do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      "test": ["test.quick"],
+      "test": ["test"],
       "test.full": [
         "ecto.reset",
         "test.unit",
         "test.integration",
         "test.integration"
       ],
-      "test.quick": ["test --exclude heavy"],
       "test.unit": ["test --only unit"],
-      "test.heavy": ["test --only heavy"],
       "test.integration": ["test --only integration"],
       "pr": [
         "clean",

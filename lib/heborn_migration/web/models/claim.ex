@@ -3,7 +3,6 @@ defmodule HEBornMigration.Web.Claim do
   use Ecto.Schema
 
   alias HEBornMigration.Web.Account
-  alias HEBornMigration.Web.Token
 
   import Ecto.Changeset
 
@@ -15,6 +14,7 @@ defmodule HEBornMigration.Web.Claim do
   }
 
   @primary_key false
+  @ecto_autogenerate {:token, {UUID, :uuid4, []}}
   schema "claims" do
     field :token, :string,
       primary_key: true
@@ -50,7 +50,6 @@ defmodule HEBornMigration.Web.Claim do
     |> validate_required([:display_name])
     |> validate_change(:display_name, &validate_display_name/2)
     |> unique_constraint(:display_name)
-    |> put_change(:token, Token.generate())
   end
 
   @spec validate_display_name(:display_name, String.t) ::

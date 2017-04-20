@@ -10,9 +10,7 @@
       No confirmation email yet?<br/>
       It's possible to restart the migration process of unconfirmed accounts
       after 48 hours, so you should be able to retry:
-      <strong>
-        just wait the time and try generating the migration token again.
-      </strong>
+      <strong>just wait the time and try migrating again</strong>.
     </p>
   </small>
 </div>

@@ -17,12 +17,15 @@ defmodule HEBornMigration.Web.Router do
     pipe_through :browser
 
     get "/", PageController, :get_migrate
-    post "/", PageController, :post_migrate
+    get "/migrate/:token", PageController, :get_migrate
+    post "/migrate/", PageController, :post_migrate
 
     get "/confirm", PageController, :get_confirm
     post "/confirm", PageController, :post_confirm
 
     get "/claim/:secret/:username", PageController, :claim_by_link
     get "/confirm/:code", PageController, :confirm_by_link
+
+    get "/err/:username", PageController, :claim_error
   end
 end

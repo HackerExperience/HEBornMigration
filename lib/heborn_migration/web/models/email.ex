@@ -6,10 +6,9 @@ defmodule HEBornMigration.Web.Email do
 
   import Phoenix.View, only: [render_to_string: 3]
 
-  @url "1.hackerexperience.com/migrate"
-
   def confirmation(to, code) do
-    link = @url <> "/confirm"
+    host = HEBornMigration.Web.Endpoint.url()
+    link = host <> "/confirm"
 
     assigns = [
       code: code,

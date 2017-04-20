@@ -32,6 +32,8 @@ defmodule HEBornMigration.Web.Account do
     field :username, :string
     field :display_name, :string
     field :password, :string
+    field :token, :string,
+      virtual: true
     field :password_confirmation, :string,
       virtual: true
     field :confirmed, :boolean,
@@ -108,7 +110,7 @@ defmodule HEBornMigration.Web.Account do
     # no display_name validation is being done here as it was already
     # validated on Claim model
     struct
-    |> cast(params, [:display_name, :email, :password, :confirmed])
+    |> cast(params, [:token, :display_name, :email, :password, :confirmed])
     |> propagate_change(:display_name, :username, &String.downcase/1)
     |> unique_constraint(:username)
     |> validate_change(:email, &validate_email/2)

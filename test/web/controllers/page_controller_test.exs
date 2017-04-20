@@ -9,12 +9,6 @@ defmodule HEBornMigration.Web.PageControllerTest do
 
   @secret Application.fetch_env!(:heborn_migration, :claim_secret)
 
-  def get_token(conn) do
-    conn
-    |> get("/claim/#{@secret}/username")
-    |> text_response(200)
-  end
-
   describe "GET /" do
     test "returns the home page", %{conn: conn} do
       conn = get conn, "/"
@@ -22,20 +16,20 @@ defmodule HEBornMigration.Web.PageControllerTest do
     end
   end
 
-  describe "POST /" do
+  describe "POST /migrate" do
     test "succeeds returning the migration in progress page", %{conn: conn} do
-      token = get_token(conn)
+      claim = Factory.insert(:claim)
 
       params = %{
         account: %{
-          token: token,
+          token: claim.token,
           email: "example@email.com",
           password: "12345678",
           password_confirmation: "12345678",
         }
       }
 
-      conn = post(conn, "/", params)
+      conn = post(conn, "/migrate", params)
       assert html_response(conn, 200) =~ "almost ready!"
     end
 
@@ -49,7 +43,7 @@ defmodule HEBornMigration.Web.PageControllerTest do
         }
       }
 
-      conn = post(conn, "/", params)
+      conn = post(conn, "/migrate", params)
       assert html_response(conn, 200) =~ "Migrate"
     end
   end
@@ -90,18 +84,14 @@ defmodule HEBornMigration.Web.PageControllerTest do
       assert text_response(conn, 200)
     end
 
-    test "fails gracefully return 500 with invalid secret", %{conn: conn} do
+    test "fails with 500 code when secret is invalid", %{conn: conn} do
       conn = get conn, "/claim/wat/username"
       assert text_response(conn, 500) =~ "Internal server error"
     end
 
-    test "fails returning 500 with invalid name", %{conn: conn} do
-      response = assert_error_sent 500, fn ->
-        get conn, "/claim/#{@secret}/@invalid~username"
-      end
-
-      assert {500, _, body} = response
-      assert body =~ "Internal server error"
+    test "fails with invalid name", %{conn: conn} do
+      conn = get conn, "/claim/#{@secret}/@invalid~username"
+      assert text_response(conn, 200) =~ "err"
     end
   end
 

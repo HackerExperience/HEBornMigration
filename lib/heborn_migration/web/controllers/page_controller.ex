@@ -10,8 +10,8 @@ defmodule HEBornMigration.Web.PageController do
   @doc """
   The standard index route, features a migration form.
   """
-  def get_migrate(conn, _params) do
-    changeset = Account.changeset(%Account{}, %{})
+  def get_migrate(conn, params) do
+    changeset = Account.changeset(%Account{}, %{token: params["token"]})
     render conn, "index.html", changeset: changeset
   end
 
@@ -57,12 +57,28 @@ defmodule HEBornMigration.Web.PageController do
   """
   def claim_by_link(conn, %{"username" => display_name, "secret" => secret}) do
     if secret == @secret do
-      text conn, Service.claim!(display_name)
+      host = HEBornMigration.Web.Endpoint.url()
+
+      case Service.claim(display_name) do
+        {:ok, token} ->
+          url = host <> page_path(conn, :post_migrate) <> "/" <> token
+          text conn, url
+        _ ->
+          url = host <> page_path(conn, :claim_error, display_name)
+          text conn, url
+      end
     else
       conn
       |> put_status(500)
       |> text("Internal server error")
     end
+  end
+
+  @doc """
+  Default page redirect for claim erorrs.
+  """
+  def claim_error(conn, params) do
+    render conn, "claim_error.html", username: params["username"]
   end
 
   @doc """

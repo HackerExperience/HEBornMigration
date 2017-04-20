@@ -19,14 +19,10 @@ config :comeonin, :bcrypt_log_rounds, 2
 config :heborn_migration, HEBornMigration.TestMailer,
   adapter: Bamboo.TestAdapter
 
-# claim route secret
-config :heborn_migration,
-  claim_secret: "secret"
-
 # config helf to use the test mailer
 config :helf, HELF.Mailer,
   mailers: [HEBornMigration.TestMailer],
-  default_sender: "noreply@hackerexperience.com"
+  default_sender: "contact@hackerexperience.com"
 
 # endpoint config
 config :heborn_migration, HEBornMigration.Web.Endpoint,

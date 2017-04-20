@@ -2,24 +2,41 @@ defmodule HEBornMigration.Web.PageController do
   use HEBornMigration.Web, :controller
 
   alias HEBornMigration.Web.Account
+  alias HEBornMigration.Web.ClaimController
   alias HEBornMigration.Web.Confirmation
   alias HEBornMigration.Web.Service
 
   @secret Application.fetch_env!(:heborn_migration, :claim_secret)
 
   @doc """
-  The standard index route, features a migration form.
+  The standard index route.
+  """
+  def index(conn, _params) do
+    render conn, "index.html"
+  end
+
+  @doc """
+  The migrate route, features a migration form.
   """
   def get_migrate(conn, params) do
-    changeset = Account.changeset(%Account{}, %{token: params["token"]})
-    render conn, "index.html", changeset: changeset
+    token = params["token"]
+
+    case ClaimController.fetch_display_name(token) do
+      {:ok, name} ->
+        changeset = Account.changeset(%Account{}, %{})
+        render conn, "migrate.html",
+          changeset: changeset,
+          username: name,
+          token: token
+      _ ->
+        render conn, "invalid_claim.html"
+    end
   end
 
   @doc """
   Post route for migrating an account.
   """
-  def post_migrate(conn, %{"account" => account}) do
-    token = account["token"]
+  def post_migrate(conn, %{"account" => account, "token" => token}) do
     email = account["email"]
     pass0 = account["password"]
     pass1 = account["password_confirmation"]
@@ -28,7 +45,11 @@ defmodule HEBornMigration.Web.PageController do
       {:ok, account} ->
         render conn, "migrated.html", email: account.email
       {:error, changeset} ->
-        render conn, "index.html", changeset: changeset
+        {:ok, name} = Ecto.Changeset.fetch_change(changeset, :display_name)
+        render conn, "migrate.html",
+          changeset: changeset,
+          username: name,
+          token: token
     end
   end
 
@@ -61,7 +82,7 @@ defmodule HEBornMigration.Web.PageController do
 
       case Service.claim(display_name) do
         {:ok, token} ->
-          url = host <> page_path(conn, :post_migrate) <> "/" <> token
+          url = host <> page_path(conn, :post_migrate, token)
           text conn, url
         _ ->
           url = host <> page_path(conn, :claim_error, display_name)

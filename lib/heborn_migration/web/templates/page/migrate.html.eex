@@ -1,0 +1,44 @@
+<header class="page-header">
+  <h2 class="page-title">
+    Migrate to HEBorn
+  </h2>
+</header>
+<div class="page-content">
+  <p>
+    Welcome back <strong><%= @username %></strong>!
+  </p>
+  <%= form_for @changeset,
+        page_path(@conn, :post_migrate, @token),
+        [class: "pure-form pure-form-stacked"],
+        fn f -> %>
+    <fieldset>
+      <label for="email">
+        Email:
+      </label>
+      <%= text_input f, :email,
+            id: "email",
+            type: "email",
+            placeholder: "Email" %>
+      <%= error_tag f, :email %>
+
+      <label for="password">
+        Password:
+      </label>
+      <%= password_input f, :password,
+            id: "password",
+            placeholder: "Password" %>
+      <%= error_tag f, :password %>
+
+      <label for="password_confirmation">
+        Confirm Password:
+      </label>
+      <%= password_input f, :password_confirmation,
+            id: "password_confirmation",
+            placeholder: "Retype Password" %>
+      <%= error_tag f, :password_confirmation %>
+
+      <br />
+      <%= submit "Migrate", class: "pure-button pure-button-active" %>
+    </fieldset>
+  <% end %>
+</div>

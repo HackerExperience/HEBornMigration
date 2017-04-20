@@ -15,6 +15,10 @@ config :heborn_migration, HEBornMigration.Repo,
 # comeonim bcrypt rounds
 config :comeonin, :bcrypt_log_rounds, 2
 
+# claim route secret
+config :heborn_migration,
+  claim_secret: "secret"
+
 # config the test mailer
 config :heborn_migration, HEBornMigration.TestMailer,
   adapter: Bamboo.TestAdapter

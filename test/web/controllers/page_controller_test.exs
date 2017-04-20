@@ -12,38 +12,51 @@ defmodule HEBornMigration.Web.PageControllerTest do
   describe "GET /" do
     test "returns the home page", %{conn: conn} do
       conn = get conn, "/"
-      assert html_response(conn, 200) =~ "Migrate"
+      assert html_response(conn, 200) =~ "migration process by signing"
     end
   end
 
-  describe "POST /migrate" do
+
+  describe "GET /migrate/:token" do
+    test "returns the migration page", %{conn: conn} do
+      claim = Factory.insert(:claim)
+      conn = get conn, "/migrate/#{claim.token}"
+      assert html_response(conn, 200) =~ "Welcome back"
+    end
+
+    test "returns the home page", %{conn: conn} do
+      conn = get conn, "/migrate/potato"
+      assert html_response(conn, 200) =~ "expired"
+    end
+  end
+
+  describe "POST /migrate/:token" do
     test "succeeds returning the migration in progress page", %{conn: conn} do
       claim = Factory.insert(:claim)
 
       params = %{
         account: %{
-          token: claim.token,
           email: "example@email.com",
           password: "12345678",
           password_confirmation: "12345678",
         }
       }
 
-      conn = post(conn, "/migrate", params)
+      conn = post(conn, "/migrate/#{claim.token}", params)
       assert html_response(conn, 200) =~ "almost ready!"
     end
 
     test "fails returning the home page with input errors", %{conn: conn} do
+      claim = Factory.insert(:claim)
       params = %{
         account: %{
-          token: "",
           email: "",
           password: "",
           password_confirmation: "12345678",
         }
       }
 
-      conn = post(conn, "/migrate", params)
+      conn = post(conn, "/migrate/#{claim.token}", params)
       assert html_response(conn, 200) =~ "Migrate"
     end
   end

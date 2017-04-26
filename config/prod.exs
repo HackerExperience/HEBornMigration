@@ -24,6 +24,5 @@ config :heborn_migration,
 # endpoint config
 config :heborn_migration, HEBornMigration.Web.Endpoint,
   code_reloader: false,
-  on_init: {HEBornMigration.Web.Endpoint, :load_from_system_env, []},
-  url: [host: "1.hackerexperience.com/migrate", port: 80]
+  http: [port: 4000]
 

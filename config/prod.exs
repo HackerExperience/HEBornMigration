@@ -25,8 +25,5 @@ config :heborn_migration,
 config :heborn_migration, HEBornMigration.Web.Endpoint,
   code_reloader: false,
   on_init: {HEBornMigration.Web.Endpoint, :load_from_system_env, []},
-  url: [host: "1.hackerexperience.com/migrate", port: 80],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  url: [host: "1.hackerexperience.com/migrate", port: 80]
 
-# import secret keys
-import_config "prod.secret.exs"

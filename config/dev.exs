@@ -5,12 +5,13 @@ config :logger, :console, format: "[$level] $message\n"
 
 # repo configs, large timeout cause SMTP latency is high from office
 config :heborn_migration, HEBornMigration.Repo,
+  database: "heborn_migration_dev",
   pool_size: 4,
   timeout: 60_000,
   pool_timeout: 60_000
 
 # comeonim bcrypt rounds
-config :comeonin, :bcrypt_log_rounds, 2
+config :comeonin, :bcrypt_log_rounds, 14
 
 # claim route secret
 config :heborn_migration,

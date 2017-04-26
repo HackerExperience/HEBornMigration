@@ -8,10 +8,9 @@ config :logger, :console,
 # repo configs
 config :heborn_migration, HEBornMigration.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "heborn_migration_dev",
-  hostname: "localhost"
+  username: System.get_env("HEBORN_MIGRATION_DB_USERNAME") || "postgres",
+  password: System.get_env("HEBORN_MIGRATION_DB_PASSWORD") || "postgres",
+  hostname: System.get_env("HEBORN_MIGRATION_DB_HOST") ||"localhost"
 
 # project namespace and repos
 config :heborn_migration,
@@ -23,8 +22,8 @@ config :heborn_migration, HEBornMigration.Web.Mailer,
   adapter: Bamboo.SMTPAdapter,
   server: System.get_env("HEBORN_MIGRATION_SMTP_HOST"),
   port: System.get_env("HEBORN_MIGRATION_SMTP_PORT") || 587,
-  username: System.get_env("HEBORN_MIGRATION_LOGIN"),
-  password: System.get_env("HEBORN_MIGRATION_PASSWORD"),
+  username: System.get_env("HEBORN_MIGRATION_SMTP_LOGIN"),
+  password: System.get_env("HEBORN_MIGRATION_SMTP_PASSWORD"),
   tls: :if_available,
   ssl: false,
   retries: 3

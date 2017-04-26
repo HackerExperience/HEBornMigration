@@ -5,7 +5,7 @@ config :logger, level: :info
 
 # repo configs
 config :heborn_migration, HEBornMigration.Repo,
-  pool_size: 20,
+  pool_size: 20,  database: "heborn_migration_prod",
   timeout: 30_000,
   pool_timeout: 30_000
 

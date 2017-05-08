@@ -46,6 +46,8 @@ defmodule HEBornMigration.Mixfile do
     [
       {:distillery, "~>1.2", runtime: false},
 
+      {:httpoison, "~> 0.11.2"},
+
       {:phoenix, "~> 1.3.0-rc"},
       {:cowboy, "~> 1.0"},
       {:phoenix_pubsub, "~> 1.0"},

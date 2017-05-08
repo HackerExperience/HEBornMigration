@@ -12,6 +12,10 @@ config :heborn_migration, HEBornMigration.Repo,
   password: System.get_env("HEBORN_MIGRATION_DB_PASSWORD") || "postgres",
   hostname: System.get_env("HEBORN_MIGRATION_DB_HOST") ||"localhost"
 
+config :heborn_migration, :exporter,
+  token: "defaultMigrationToken",
+  url: "https://localhost:4000/v1/webhook/migration/import"
+
 # project namespace and repos
 config :heborn_migration,
   namespace: HEBornMigration,

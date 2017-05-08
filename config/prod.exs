@@ -3,6 +3,10 @@ use Mix.Config
 # logger config
 config :logger, level: :info
 
+config :heborn_migration, :exporter,
+  token: System.get_env("HEBORN_MIGRATION_EXPORTER_TOKEN"),
+  url: System.get_env("HEBORN_MIGRATION_EXPORTER_URL")
+
 # repo configs
 config :heborn_migration, HEBornMigration.Repo,
   pool_size: 20,  database: "heborn_migration_prod",

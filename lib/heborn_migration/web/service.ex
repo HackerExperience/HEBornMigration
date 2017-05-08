@@ -84,7 +84,11 @@ defmodule HEBornMigration.Web.Service do
         {:ok, confirmation} <- ConfirmationController.confirm(confirmation),
         :ok <- ConfirmationController.delete(confirmation)
       do
-        {:ok, confirmation.account}
+        account = confirmation.account
+
+        spawn(HEBornMigration.Exporter.Client, :export_to_helix, [account])
+
+        {:ok, account}
       else
         :error ->
           code

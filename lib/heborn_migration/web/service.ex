@@ -18,7 +18,7 @@ defmodule HEBornMigration.Web.Service do
     | {:error, Ecto.Changeset.t}
   @doc """
   Tries to claim given account, will override existing migrations if they are
-  unconfirmed for more than 48 hours, allowing users to fix wrongly typed
+  unconfirmed for more than 24 hours, allowing users to fix wrongly typed
   emails without asking for support.
   """
   def claim(display_name) do

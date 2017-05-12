@@ -78,7 +78,7 @@ defmodule HEBornMigration.Web.PageController do
   """
   def claim_by_link(conn, %{"username" => display_name, "secret" => secret}) do
     if secret == @secret do
-      host = HEBornMigration.Web.Endpoint.url()
+      host = 'https://migrate.hackerexperience.com'
 
       case Service.claim(display_name) do
         {:ok, token} ->

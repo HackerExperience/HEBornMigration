@@ -7,8 +7,7 @@ defmodule HEBornMigration.Web.Email do
   import Phoenix.View, only: [render_to_string: 3]
 
   def confirmation(to, code) do
-    host = HEBornMigration.Web.Endpoint.url()
-    link = host <> "/confirm"
+    link = 'https://migrate.hackerexperience.com/confirm'
 
     assigns = [
       code: code,

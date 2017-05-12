@@ -52,7 +52,7 @@ defmodule HEBornMigration.Web.Confirmation do
       %__MODULE__{}
       |> Ecto.Changeset.cast(%{}, [])
       |> Ecto.Changeset.put_change(:code, code)
-      |> Ecto.Changeset.add_error(:code, "is invalid")
+      |> Ecto.Changeset.add_error(:code, "Invalid code")
 
     # phoenix only displays errors from changeset with actions
     %{changeset | action: :update}

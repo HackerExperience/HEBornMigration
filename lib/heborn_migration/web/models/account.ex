@@ -25,7 +25,7 @@ defmodule HEBornMigration.Web.Account do
   }
 
   # unconfirmed account expire date
-  @expiration_time 2 * 24 * 60 * 60
+  @expiration_time 1 * 24 * 60 * 60
 
   schema "accounts" do
     field :email, :string
@@ -90,7 +90,7 @@ defmodule HEBornMigration.Web.Account do
   @spec expired?(t) ::
     boolean
   @doc """
-  Checks if the account is unconfirmed for more than 48 hours.
+  Checks if the account is unconfirmed for more than 24 hours.
   """
   def expired?(struct) do
     now = NaiveDateTime.utc_now()
@@ -141,7 +141,7 @@ defmodule HEBornMigration.Web.Account do
     is_binary(value)
     && Regex.match?(~r/^[\w0-9\.\-\_\+]+@[\w0-9\.\-\_]+\.[\w0-9\-]+$/ui, value)
     && []
-    || [email: "has invalid format"]
+    || [email: "Invalid email format"]
   end
 
   @spec validate_password(Ecto.Changeset.t) :: Ecto.Changeset.t
@@ -150,7 +150,7 @@ defmodule HEBornMigration.Web.Account do
       changeset,
       :password,
       required: true,
-      message: "does not match password")
+      message: "Passwords do not match")
   end
 
   defmodule Query do

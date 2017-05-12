@@ -7,10 +7,8 @@
   <p>We've sent a confirmation email to <%= @email %></p>
   <small>
     <p>
-      No confirmation email yet?<br/>
-      It's possible to restart the migration process of unconfirmed accounts
-      after 48 hours, so you should be able to retry:
-      <strong>just wait the time and try migrating again</strong>.
+        No confirmation email yet?<br/>
+        In case you have any trouble, you can restart the migration process in 24 hours.
     </p>
   </small>
 </div>

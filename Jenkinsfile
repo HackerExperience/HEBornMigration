@@ -40,10 +40,6 @@ node('elixir') {
 
     withEnv (['MIX_ENV=prod']) {
       sh 'mix compile'
-<<<<<<< HEAD
-      sh 'mix release --env=prod --warnings-as-errors'
-=======
->>>>>>> Add Jenkinsfile
     }
 
     stash 'build-prod'
@@ -65,20 +61,7 @@ node('elixir') {
 //   }
 // }
 
-<<<<<<< HEAD
-node('elixir') {
-
-  stage('Save artifacts') {
-    step([$class: 'WsCleanup'])
-
-    unstash 'build-prod'
-
-    sh "aws s3 cp _build/prod/rel/helix/releases/*/helix.tar.gz s3://he2-releases/helix/${env.BRANCH_NAME}/${env.BUILD_VERSION}.tar.gz --storage-class REDUCED_REDUNDANCY"
-
-  }
-=======
 node('!master') {
->>>>>>> Add Jenkinsfile
 
   if (env.BRANCH_NAME == 'master'){
     lock(resource: 'hebornmigration-deployment', inversePrecedence: true) {

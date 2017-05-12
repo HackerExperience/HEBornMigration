@@ -1,10 +1,10 @@
 <header class="page-header">
   <h2 class="page-title">
-    Can't claim this username
+    Can't claim username
   </h2>
 </header>
 <div class="page-content">
   <p>
-    The username <strong><%= @username %></strong> is probably already migrated.
+    Something went wrong. The username <strong><%= @username %></strong> has already been migrated.
   </p>
 </div>

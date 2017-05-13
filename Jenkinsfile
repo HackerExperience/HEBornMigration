@@ -65,9 +65,7 @@ node('!master') {
 
   if (env.BRANCH_NAME == 'master'){
     lock(resource: 'hebornmigration-deployment', inversePrecedence: true) {
-      stage('Deploy') {
-        sh "ssh deployer deploy heborn_migration prod --branch master"
-      }
+      sh "ssh deployer deploy heborn_migration prod --branch master"
     }
     milestone()
   }

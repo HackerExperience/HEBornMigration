@@ -4,8 +4,10 @@
   </h2>
 </header>
 <div class="page-content">
-  <p>
-    Welcome back <strong><%= @username %></strong>!
+    <p>
+        Hey <strong><%= @username %></strong>!<br/>
+        Enter the password and email for your new HEBorn account.<br/><br/>
+        Please note that it's imperative that your email address is valid and not temporary. We have no means to recover your account if you lose access to your email address.
   </p>
   <%= form_for @changeset,
         page_path(@conn, :post_migrate, @token),

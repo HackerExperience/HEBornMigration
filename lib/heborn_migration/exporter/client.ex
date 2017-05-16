@@ -18,7 +18,7 @@ defmodule HEBornMigration.Exporter.Client do
       email: account.email
     })
 
-    {:ok, _} = HTTPoison.post(config[:url], body, headers)
+    {:ok, _} = HTTPoison.post(config[:url], body, headers, [ssl: [{:versions, [:'tlsv1.2']}]])
 
     Logger.info("Successfully exported user \"#{account.username}\"")
   end
